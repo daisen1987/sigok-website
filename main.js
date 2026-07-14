@@ -1,3 +1,15 @@
+// ===== Dashboard tab switching =====
+document.querySelectorAll('.hc-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const target = tab.dataset.tab;
+    document.querySelectorAll('.hc-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.hc-panel').forEach(p => p.style.display = 'none');
+    tab.classList.add('active');
+    const panel = document.getElementById('tab-' + target);
+    if (panel) panel.style.display = 'block';
+  });
+});
+
 // ===== Hamburger menu =====
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');
