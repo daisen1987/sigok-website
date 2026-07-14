@@ -98,6 +98,14 @@ input,textarea,select{font-family:var(--font-body)}
 .hc-badge-live{margin-left:auto;display:flex;align-items:center;gap:5px;font-size:11px;color:#4ADE80;font-weight:700;letter-spacing:0.5px}
 .hc-badge-live::before{content:'';width:6px;height:6px;background:#4ADE80;border-radius:50%;animation:glow 1.2s ease infinite}
 .hc-stats{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid rgba(255,255,255,0.06)}
+.hc-stats-4{grid-template-columns:repeat(4,1fr)}
+/* 三端标签切换 */
+.hc-tabs{display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.hc-tab{flex:1;padding:10px 12px;background:transparent;border:none;color:rgba(255,255,255,0.4);font-size:12px;font-weight:600;cursor:pointer;transition:all 200ms;font-family:var(--font-body);letter-spacing:0.3px}
+.hc-tab:hover{color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.04)}
+.hc-tab.active{color:#fff;background:rgba(255,255,255,0.06);border-bottom:2px solid var(--primary)}
+.hc-trend-up{color:#4ADE80}
+.hc-trend-down{color:#FB923C}
 .hc-stat{padding:24px 16px;text-align:center;position:relative;transition:background 200ms}
 .hc-stat:hover{background:rgba(255,255,255,0.03)}
 .hc-stat:not(:last-child){border-right:1px solid rgba(255,255,255,0.06)}
@@ -128,7 +136,7 @@ input,textarea,select{font-family:var(--font-body)}
 /* Features — Image1样式：3列白卡，图标+标题+描述+底部pill标签 */
 .features{padding:108px 0;background:linear-gradient(180deg,#F0F5FC 0%,#E8EFF8 100%);position:relative}
 .features::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(13,124,187,0.04) 1px,transparent 1px);background-size:32px 32px;pointer-events:none}
-.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;position:relative}
+.features-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;position:relative}
 .feature-card{background:var(--white);border-radius:20px;padding:36px 30px 28px;border:none;box-shadow:0 4px 24px rgba(0,0,0,0.07);transition:all 280ms ease;position:relative;overflow:hidden;display:flex;flex-direction:column}
 .feature-card:hover{transform:translateY(-7px);box-shadow:0 16px 48px rgba(0,0,0,0.11)}
 .fc-icon{font-size:40px;margin-bottom:20px;line-height:1;display:block}
@@ -271,7 +279,7 @@ footer::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;back
 .form-group input,.form-group textarea{width:100%;padding:13px 17px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;background:var(--white);transition:all 200ms;outline:none;color:var(--fg)}
 .form-group input:focus,.form-group textarea:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(255,107,53,0.1)}
 .form-group textarea{resize:vertical;min-height:110px}
-@media(max-width:1024px){.features-grid{grid-template-columns:repeat(2,1fr)}.hero-title{font-size:52px}.hero-inner{gap:44px}.tech-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1024px){.features-grid{grid-template-columns:repeat(2,1fr)}.hero-title{font-size:52px}.hero-inner{gap:44px}.tech-grid{grid-template-columns:repeat(2,1fr)}.hc-stats-4{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){
   .hero-body{padding:100px 0 60px}
   .hero-title{font-size:40px}
@@ -329,7 +337,7 @@ footer::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;back
       <!-- 左侧文字内容 -->
       <div class="hero-content fade-in">
         <div class="hero-tag"><span class="hero-tag-dot"></span>品质快闪交易平台</div>
-        <h1 class="hero-title">好货不贵<br/>比价可见<br/><span class="highlight">闪淘无忧</span></h1>
+        <h1 class="hero-title"><span class="highlight">闪淘无忧</span>，好货不贵<br/>比价可见</h1>
         <p class="hero-sub">让消费重回本质——透明定价、极速回款、双向信用，三方共赢电商新生态</p>
         <div class="hero-features">
           <div class="hf-item"><span class="hf-icon">⚡</span>闪团秒杀</div>
@@ -349,24 +357,88 @@ footer::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;back
           <span class="hc-dot red"></span>
           <span class="hc-dot yellow"></span>
           <span class="hc-dot green"></span>
-          <span class="hc-title">REAL-TIME DASHBOARD</span>
+          <span class="hc-title">FLASH-SELECT · 全平台实时看板</span>
           <span class="hc-badge-live">LIVE</span>
         </div>
-        <div class="hc-stats">
-          <div class="hc-stat">
-            <span class="hc-num">12,580<span class="hc-num-unit"></span></span>
-            <span class="hc-trend">↑ 今日新增 +234</span>
-            <span class="hc-label">今日订单</span>
+        <!-- 三端数据标签切换 -->
+        <div class="hc-tabs">
+          <button class="hc-tab active" data-tab="consumer">📱 消费者端</button>
+          <button class="hc-tab" data-tab="supplier">🏭 供应商端</button>
+          <button class="hc-tab" data-tab="admin">🛡️ 管理后台</button>
+        </div>
+        <!-- 消费者端数据 -->
+        <div class="hc-panel" id="tab-consumer">
+          <div class="hc-stats hc-stats-4">
+            <div class="hc-stat">
+              <span class="hc-num">12,580</span>
+              <span class="hc-trend hc-trend-up">↑ 今日新增 +234</span>
+              <span class="hc-label">今日订单量</span>
+            </div>
+            <div class="hc-stat">
+              <span class="hc-num">4,820<span class="hc-num-unit">元</span></span>
+              <span class="hc-trend hc-trend-up">↑ 人均节省 +38</span>
+              <span class="hc-label">今日消费者节省</span>
+            </div>
+            <div class="hc-stat">
+              <span class="hc-num">98<span class="hc-num-unit">%</span></span>
+              <span class="hc-trend hc-trend-up">↑ 高于行业均值</span>
+              <span class="hc-label">买家满意度</span>
+            </div>
+            <div class="hc-stat">
+              <span class="hc-num">23<span class="hc-num-unit">s</span></span>
+              <span class="hc-trend hc-trend-up">↑ 较上周 -5s</span>
+              <span class="hc-label">平均下单时长</span>
+            </div>
           </div>
-          <div class="hc-stat">
-            <span class="hc-num">856<span class="hc-num-unit"></span></span>
-            <span class="hc-trend">↑ 本周 +12</span>
-            <span class="hc-label">入驻供应商</span>
+        </div>
+        <!-- 供应商端数据 -->
+        <div class="hc-panel" id="tab-supplier" style="display:none">
+          <div class="hc-stats hc-stats-4">
+            <div class="hc-stat">
+              <span class="hc-num">856</span>
+              <span class="hc-trend hc-trend-up">↑ 本周新增 +12</span>
+              <span class="hc-label">入驻供应商</span>
+            </div>
+            <div class="hc-stat">
+              <span class="hc-num">¥68.4<span class="hc-num-unit">万</span></span>
+              <span class="hc-trend hc-trend-up">↑ 今日结算 +9%</span>
+              <span class="hc-label">今日T+1结算额</span>
+            </div>
+            <div class="hc-stat">
+              <span class="hc-num">3,240</span>
+              <span class="hc-trend hc-trend-up">↑ 本周上架 +186</span>
+              <span class="hc-label">在售商品数</span>
+            </div>
+            <div class="hc-stat">
+              <span class="hc-num">99.2<span class="hc-num-unit">%</span></span>
+              <span class="hc-trend">AI审核准确率</span>
+              <span class="hc-label">上架通过率</span>
+            </div>
           </div>
-          <div class="hc-stat">
-            <span class="hc-num">98<span class="hc-num-unit">%</span></span>
-            <span class="hc-trend">↑ 高于行业均值</span>
-            <span class="hc-label">满意度</span>
+        </div>
+        <!-- 管理后台数据 -->
+        <div class="hc-panel" id="tab-admin" style="display:none">
+          <div class="hc-stats hc-stats-4">
+            <div class="hc-stat">
+              <span class="hc-num">¥142<span class="hc-num-unit">万</span></span>
+              <span class="hc-trend hc-trend-up">↑ 今日GMV +11%</span>
+              <span class="hc-label">平台今日流水</span>
+            </div>
+            <div class="hc-stat">
+              <span class="hc-num">3</span>
+              <span class="hc-trend hc-trend-down">↓ 较昨日 -2</span>
+              <span class="hc-label">待处理纠纷</span>
+            </div>
+            <div class="hc-stat">
+              <span class="hc-num">100<span class="hc-num-unit">%</span></span>
+              <span class="hc-trend">全部正常运行</span>
+              <span class="hc-label">系统服务健康度</span>
+            </div>
+            <div class="hc-stat">
+              <span class="hc-num">4.88<span class="hc-num-unit">分</span></span>
+              <span class="hc-trend hc-trend-up">↑ 平台NPS +0.06</span>
+              <span class="hc-label">平台综合评分</span>
+            </div>
           </div>
         </div>
         <div class="hc-ticker-label">实时成交动态</div>
@@ -376,6 +448,7 @@ footer::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;back
             <span class="ticker-item">🚀 刚刚 成都李先生 抢到了 原价¥399 <strong>闪购¥219</strong></span>
             <span class="ticker-item">💰 刚刚 上海王先生 节省了 <strong>¥86</strong></span>
             <span class="ticker-item">⚡ 刚刚 广州赵女士 抢到了 原价¥599 <strong>闪购¥299</strong></span>
+            <span class="ticker-item">🏭 供应商「优品源」今日结算 <strong>¥2,860</strong></span>
             <span class="ticker-item">🎉 刚刚 北京张女士 节省了 <strong>¥128</strong></span>
             <span class="ticker-item">🚀 刚刚 成都李先生 抢到了 原价¥399 <strong>闪购¥219</strong></span>
             <span class="ticker-item">💰 刚刚 上海王先生 节省了 <strong>¥86</strong></span>
@@ -383,8 +456,8 @@ footer::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;back
           </div>
         </div>
         <div class="hc-footer">
-          <div class="hc-status"><span class="hc-status-dot"></span>系统运行正常</div>
-          <div class="hc-status">数据实时更新</div>
+          <div class="hc-status"><span class="hc-status-dot"></span>三端系统运行正常</div>
+          <div class="hc-status">消费者端 · 供应商端 · 管理后台 全面互联</div>
         </div>
       </div>
     </div>
