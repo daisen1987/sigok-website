@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>供应商入驻申请 - 闪淘严选</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- 导航栏 -->
+<nav id="navbar" class="scrolled">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-icon">⚡</span>
+      <span class="logo-text">闪淘严选</span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html#features">平台优势</a></li>
+      <li><a href="index.html#entries">功能入口</a></li>
+      <li><a href="about.html">关于我们</a></li>
+      <li><a href="join.html" style="color:var(--primary)">申请入驻</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="supplier-login.html" class="btn btn-outline">供应商入口</a>
+      <a href="admin-login.html" class="btn btn-accent">管理入口</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="菜单">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="join-hero">
+  <div class="container join-hero-inner">
+    <div class="fade-in">
+      <div style="display:inline-block;background:rgba(255,255,255,0.2);color:#fff;padding:6px 14px;border-radius:20px;font-size:13px;margin-bottom:20px;font-weight:600;">
+        ✨ 免费入驻 · 5分钟审核
+      </div>
+      <h1>申请成为<br/>闪淘严选供应商</h1>
+      <p>填写基本信息，提交申请，我们将在 1-3 个工作日内联系您完成入驻审核</p>
+      <div class="join-benefits-grid">
+        <div class="jb-item">
+          <strong>💰 T+1 极速结算</strong>
+          今天卖出，明天到账 90%
+        </div>
+        <div class="jb-item">
+          <strong>🤖 AI 智能上架</strong>
+          60秒完成商品上架，省时省力
+        </div>
+        <div class="jb-item">
+          <strong>📉 低至 3% 佣金</strong>
+          AAA 等级供应商享超低佣金
+        </div>
+        <div class="jb-item">
+          <strong>🎯 精准流量</strong>
+          平台自带消费者流量，免推广费
+        </div>
+      </div>
+    </div>
+    <div class="fade-in delay-1" style="display:flex;flex-direction:column;gap:16px;">
+      <div style="background:rgba(255,255,255,0.12);border-radius:16px;padding:28px;">
+        <h3 style="color:#fff;font-family:var(--font-heading);font-size:18px;margin-bottom:16px;">入驻流程</h3>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:12px;color:rgba(255,255,255,0.85);font-size:14px;">
+            <span style="background:#FF6B35;color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">1</span>
+            填写入驻申请表单
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;color:rgba(255,255,255,0.85);font-size:14px;">
+            <span style="background:#FF6B35;color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">2</span>
+            平台 AI 预审核（1-3工作日）
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;color:rgba(255,255,255,0.85);font-size:14px;">
+            <span style="background:#FF6B35;color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">3</span>
+            签署入驻协议 & 实名认证
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;color:rgba(255,255,255,0.85);font-size:14px;">
+            <span style="background:#FF6B35;color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">4</span>
+            开通账号，AI上架商品，开始销售
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 申请表单 -->
+<section class="join-form-section">
+  <div class="container">
+    <!-- 成功提示 -->
+    <div class="success-msg" id="successMsg">
+      <div class="sm-icon">🎉</div>
+      <h3>申请已提交成功！</h3>
+      <p>我们将在 <strong>1-3 个工作日</strong> 内联系您完成入驻审核<br/>请保持手机畅通，期待与您合作！</p>
+      <a href="index.html" class="btn btn-primary" style="margin-top:20px;">返回首页</a>
+    </div>
+
+    <!-- 表单 -->
+    <div class="join-form-card fade-in" id="joinFormCard">
+      <h2>填写入驻申请</h2>
+      <p class="form-desc">请如实填写以下信息，带 <span style="color:#EF4444">*</span> 为必填项</p>
+
+      <form id="joinForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>店铺名称 <span style="color:#EF4444">*</span></label>
+            <input type="text" id="shopName" placeholder="例：张记农产品旗舰店" required />
+          </div>
+          <div class="form-group">
+            <label>入驻类型 <span style="color:#EF4444">*</span></label>
+            <select id="shopType" required>
+              <option value="">请选择类型</option>
+              <option value="personal">个人供应商</option>
+              <option value="company">企业供应商</option>
+              <option value="agriculture">助农供应商</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top:20px;">
+          <label>主营类目 <span style="color:#EF4444">*</span>（可多选）</label>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px;" id="categoryGrid">
+            <label class="cat-option"><input type="checkbox" value="food" /> 🥗 食品/生鲜</label>
+            <label class="cat-option"><input type="checkbox" value="clothing" /> 👕 服装/鞋帽</label>
+            <label class="cat-option"><input type="checkbox" value="digital" /> 📱 数码/家电</label>
+            <label class="cat-option"><input type="checkbox" value="home" /> 🏠 家居/日用</label>
+            <label class="cat-option"><input type="checkbox" value="beauty" /> 💄 美妆/护肤</label>
+            <label class="cat-option"><input type="checkbox" value="agriculture" /> 🌾 农产品</label>
+            <label class="cat-option"><input type="checkbox" value="sports" /> 🏃 运动/户外</label>
+            <label class="cat-option"><input type="checkbox" value="mother" /> 👶 母婴/玩具</label>
+            <label class="cat-option"><input type="checkbox" value="other" /> 📦 其他类目</label>
+          </div>
+        </div>
+
+        <div class="form-row" style="margin-top:20px;">
+          <div class="form-group">
+            <label>联系人姓名 <span style="color:#EF4444">*</span></label>
+            <input type="text" id="contactName" placeholder="请输入联系人姓名" required />
+          </div>
+          <div class="form-group">
+            <label>联系人手机号 <span style="color:#EF4444">*</span></label>
+            <input type="tel" id="contactPhone" placeholder="请输入手机号" maxlength="11" required />
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top:20px;">
+          <label>年销售额（选填）</label>
+          <select id="annualSales">
+            <option value="">请选择</option>
+            <option value="<50w">50万以下</option>
+            <option value="50-200w">50-200万</option>
+            <option value="200-500w">200-500万</option>
+            <option value=">500w">500万以上</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-top:20px;">
+          <label>备注说明（选填）</label>
+          <textarea id="remark" rows="4" placeholder="请描述您的主要商品、品牌资质或其他补充说明…"></textarea>
+        </div>
+
+        <div class="agree-row" style="margin:20px 0 24px;">
+          <input type="checkbox" id="joinAgree" />
+          <label for="joinAgree" style="font-size:14px;color:#5A6A7A">
+            我已阅读并同意 <a href="#" style="color:var(--primary)">《供应商入驻协议》</a>、
+            <a href="#" style="color:var(--primary)">《平台规则》</a> 和 <a href="#" style="color:var(--primary)">《隐私政策》</a>
+          </label>
+        </div>
+
+        <div id="joinMsg" style="margin-bottom:16px;font-size:14px;color:#EF4444;display:none"></div>
+
+        <button type="submit" class="join-submit">提交入驻申请</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- 页脚 -->
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text" style="color:#fff">闪淘严选</span>
+      </a>
+      <p>让消费重回本质<br/>品质快闪交易平台</p>
+      <p class="footer-company">四川唯领汇供应链管理有限公司</p>
+    </div>
+    <div class="footer-links">
+      <h4>平台入口</h4>
+      <ul>
+        <li><a href="supplier-login.html">供应商登录</a></li>
+        <li><a href="admin-login.html">管理后台</a></li>
+        <li><a href="join.html">申请入驻</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>关于平台</h4>
+      <ul>
+        <li><a href="about.html">关于我们</a></li>
+        <li><a href="index.html#features">平台优势</a></li>
+        <li><a href="about.html#contact">联系我们</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>法律信息</h4>
+      <ul>
+        <li><a href="#">用户协议</a></li>
+        <li><a href="#">隐私政策</a></li>
+        <li><a href="#">ICP备案号</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 四川唯领汇供应链管理有限公司 版权所有 | sigok.cn</p>
+  </div>
+</footer>
+
+<style>
+.cat-option {
+  display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+  border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer;
+  font-size: 14px; transition: all 150ms; background: var(--white);
+}
+.cat-option:hover { border-color: var(--primary); background: #FFF3EE; }
+.cat-option input { margin: 0; accent-color: var(--primary); }
+</style>
+
+<script src="main.js"></script>
+<script>
+const joinForm = document.getElementById('joinForm');
+if (joinForm) {
+  joinForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const msgBox = document.getElementById('joinMsg');
+
+    const shopName = document.getElementById('shopName').value.trim();
+    const shopType = document.getElementById('shopType').value;
+    const contactName = document.getElementById('contactName').value.trim();
+    const contactPhone = document.getElementById('contactPhone').value.trim();
+    const agreed = document.getElementById('joinAgree').checked;
+    const categories = [...document.querySelectorAll('#categoryGrid input:checked')];
+
+    if (!shopName) { showJoinMsg('请填写店铺名称'); return; }
+    if (!shopType) { showJoinMsg('请选择入驻类型'); return; }
+    if (categories.length === 0) { showJoinMsg('请至少选择一个主营类目'); return; }
+    if (!contactName) { showJoinMsg('请填写联系人姓名'); return; }
+    if (!/^1[3-9]\d{9}$/.test(contactPhone)) { showJoinMsg('请输入正确的手机号'); return; }
+    if (!agreed) { showJoinMsg('请勾选同意入驻协议和隐私政策'); return; }
+
+    // 提交成功
+    document.getElementById('joinFormCard').style.display = 'none';
+    const successEl = document.getElementById('successMsg');
+    successEl.style.display = 'block';
+    window.scrollTo({ top: successEl.offsetTop - 100, behavior: 'smooth' });
+  });
+}
+
+function showJoinMsg(msg) {
+  const box = document.getElementById('joinMsg');
+  box.textContent = msg;
+  box.style.display = 'block';
+  setTimeout(() => { box.style.display = 'none'; }, 4000);
+}
+</script>
+</body>
+</html>
