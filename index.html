@@ -32,6 +32,11 @@ input,textarea,select{font-family:var(--font-body)}
 .fade-in{opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease}
 .fade-in.visible{opacity:1;transform:none}
 .delay-1{transition-delay:0.12s}.delay-2{transition-delay:0.24s}.delay-3{transition-delay:0.36s}
+/* Hero内容直接显示，不依赖JS */
+.hero .fade-in{opacity:1;transform:none;animation:fadeInUp 0.8s ease both}
+.hero .fade-in.delay-1{animation-delay:0.2s}
+.hero .fade-in.delay-2{animation-delay:0.4s}
+.hero .fade-in.delay-3{animation-delay:0.6s}
 .section-header{text-align:center;margin-bottom:56px}
 .section-eyebrow{display:inline-block;background:linear-gradient(135deg,#FFF3EE,#FFE4D5);color:var(--primary);padding:6px 18px;border-radius:50px;font-size:13px;font-weight:700;margin-bottom:16px;border:1px solid rgba(255,107,53,0.2);letter-spacing:0.5px}
 .section-title{font-family:var(--font-heading);font-size:36px;color:var(--fg);font-weight:800;line-height:1.25;letter-spacing:-0.5px}
