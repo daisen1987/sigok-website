@@ -539,95 +539,266 @@ tr:hover td{background:#FAFBFC}
 
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
-// ===== Mock Data（与消费端小程序 + 供应商端数据结构完全匹配） =====
-const D = {
-  orders:[
-    {order_no:'FT20260714001',buyer:'张**',product:'新疆苹果礼盒5斤',supplier:'优品源',amount:'89.00',status:'paid',pay:'微信支付',created_at:'07-14 10:23'},
-    {order_no:'FT20260714002',buyer:'李**',product:'东北五常大米10kg',supplier:'粮仓直供',amount:'256.00',status:'shipped',pay:'微信支付',created_at:'07-14 09:45'},
-    {order_no:'FT20260714003',buyer:'王**',product:'云南普洱茶饼357g',supplier:'茗茶坊',amount:'268.00',status:'completed',pay:'微信支付',created_at:'07-13 16:30'},
-    {order_no:'FT20260713004',buyer:'赵**',product:'内蒙古牛肉干500g',supplier:'优品源',amount:'258.00',status:'completed',pay:'微信支付',created_at:'07-13 14:12'},
-    {order_no:'FT20260713005',buyer:'钱**',product:'山东章丘大葱3斤',supplier:'绿农直供',amount:'38.00',status:'cancelled',pay:'—',created_at:'07-13 11:05'},
-  ],
-  suppliers:[
-    {name:'优品源旗舰店',contact:'张经理',type:'个体工商户',credit:'AAA',deposit:'¥0(免)',status:'approved',created_at:'2026-03-15'},
-    {name:'粮仓直供',contact:'王老板',type:'企业',credit:'AA',deposit:'¥5,000',status:'approved',created_at:'2026-04-02'},
-    {name:'绿农合作社',contact:'李主任',type:'农业合作社',credit:'A',deposit:'¥3,000',status:'pending',created_at:'2026-07-12'},
-    {name:'茗茶坊',contact:'陈老师',type:'个体工商户',credit:'A',deposit:'¥2,000',status:'pending',created_at:'2026-07-13'},
-  ],
-  products:[
-    {name:'新疆阿克苏苹果礼盒5斤',supplier:'优品源',category:'生鲜',flash_price:'¥89',original:'¥138',stock:200,ai_conf:'98%',status:'selling'},
-    {name:'东北五常大米10kg',supplier:'粮仓直供',category:'粮油',flash_price:'¥128',original:'¥198',stock:150,ai_conf:'97%',status:'selling'},
-    {name:'山东章丘大葱3斤',supplier:'绿农直供',category:'蔬菜',flash_price:'¥38',original:'¥58',stock:500,ai_conf:'91%',status:'reviewing'},
-    {name:'贵州茅台镇酱酒500ml',supplier:'茗茶坊',category:'酒水',flash_price:'¥268',original:'¥398',stock:80,ai_conf:'88%',status:'reviewing'},
-  ],
-  disputes:[
-    {id:'DIS001',order:'FT20260710001',buyer:'王**',supplier:'优品源',reason:'商品与描述不符',status:'ai_reviewing',verdict:'AI分析中…',created:'07-11'},
-    {id:'DIS002',order:'FT20260709002',buyer:'孙**',supplier:'粮仓直供',reason:'物流损坏',status:'jury_voting',verdict:'陪审团投票中',created:'07-10'},
-    {id:'DIS003',order:'FT20260708003',buyer:'周**',supplier:'茗茶坊',reason:'假冒伪劣',status:'resolved',verdict:'退款给消费者',created:'07-09'},
-  ],
-  settlements:[
-    {id:'SET001',supplier:'优品源',order:'FT20260713001',amount:'¥128',commission:'-¥6.40',reserved:'¥12.80',net:'¥108.80',status:'settled',at:'07-14 02:00'},
-    {id:'SET002',supplier:'粮仓直供',order:'FT20260712003',amount:'¥268',commission:'-¥13.40',reserved:'¥26.80',net:'¥227.80',status:'settled',at:'07-13 02:00'},
-    {id:'SET003',supplier:'优品源',order:'FT20260714002',amount:'¥256',commission:'-¥12.80',reserved:'¥25.60',net:'¥217.60',status:'pending',at:'—'},
-  ],
-  users:[
-    {id:'U001',name:'张**',phone:'138****8888',credit:'AAA',orders:28,saved:'¥1,240',reg:'2025-12'},
-    {id:'U002',name:'李**',phone:'139****9999',credit:'AA',orders:16,saved:'¥680',reg:'2026-02'},
-    {id:'U003',name:'王**',phone:'136****6666',credit:'A',orders:8,saved:'¥320',reg:'2026-05'},
-    {id:'U004',name:'赵**',phone:'137****7777',credit:'B',orders:3,saved:'¥86',reg:'2026-07'},
-  ],
-  refunds:[
-    {no:'REF001',order:'FT20260711002',buyer:'刘**',product:'苹果礼盒5斤',amount:'¥89',reason:'商品损坏',supplier:'优品源',status:'pending_review',at:'07-12 09:00'},
-    {no:'REF002',order:'FT20260710003',buyer:'陈**',product:'普洱茶饼',amount:'¥268',reason:'与描述不符',supplier:'茗茶坊',status:'processing',at:'07-11 14:30'},
-  ],
-  banners:[
-    {title:'七夕大促！全场88折',img:'banner1.jpg',link:'#',sort:1,status:'active'},
-    {title:'新人专属券 领¥50',img:'banner2.jpg',link:'#',sort:2,status:'active'},
-    {title:'农产品直供节',img:'banner3.jpg',link:'#',sort:3,status:'inactive'},
-  ],
-  coupons:[
-    {name:'新人专属券',type:'满减',value:'¥10',min:'¥50',claimed:'860/1000',used:'420',expire:'2026-12-31',status:'active'},
-    {name:'双旦满200减30',type:'满减',value:'¥30',min:'¥200',claimed:'1200/2000',used:'980',expire:'2026-01-01',status:'expired'},
-    {name:'闪购5折券',type:'折扣',value:'5折',min:'无门槛',claimed:'320/500',used:'210',expire:'2026-08-31',status:'active'},
-  ],
-  notifications:[
-    {title:'平台升级公告',content:'平台将于7月15日凌晨2-4点进行维护升级',type:'系统',target:'全部',at:'07-14 10:00'},
-    {title:'夏季促销活动开启',content:'全场商品享8折优惠，活动截止7月31日',type:'活动',target:'消费者',at:'07-10 09:00'},
-  ],
-  heartbeats:[
-    {content:'🎉 刚刚 北京张女士 节省了 ¥128',status:'active',at:'07-14 10:23'},
-    {content:'🚀 刚刚 成都李先生 抢到了 原价¥399 闪购¥219',status:'active',at:'07-14 10:15'},
-    {content:'💰 刚刚 上海王先生 节省了 ¥86',status:'active',at:'07-14 10:08'},
-    {content:'⚡ 刚刚 广州赵女士 抢到了 原价¥599 闪购¥299',status:'active',at:'07-14 09:58'},
-  ],
-  popups:[
-    {title:'新人专属大礼包',type:'新人优惠',status:'active',at:'2026-07-01'},
-    {title:'七夕活动通知',type:'限时活动',status:'inactive',at:'2026-07-10'},
-  ],
-  invoices:[
-    {no:'INV001',order:'FT20260712001',user:'王**',type:'增值税普票',title:'个人',tax_no:'—',amount:'¥128',email:'wang@qq.com',status:'processing'},
-    {no:'INV002',order:'FT20260710003',user:'某公司',type:'增值税专票',title:'北京某科技有限公司',tax_no:'91110108MA0...',amount:'¥268',email:'hz@company.com',status:'completed'},
-  ],
-  points:[
-    {user:'张**',type:'购物赠分',delta:'+50',balance:'1,380',order:'FT20260714001',at:'07-14 10:23'},
-    {user:'李**',type:'积分抵扣',delta:'-100',balance:'640',order:'FT20260714002',at:'07-14 09:45'},
-    {user:'王**',type:'签到赠分',delta:'+5',balance:'205',order:'—',at:'07-14 08:00'},
-  ],
-  reviews:[
-    {product:'新疆苹果礼盒',supplier:'优品源',rating:5,content:'非常新鲜甜度高',buyer:'张**',at:'07-13'},
-    {product:'五常大米10kg',supplier:'粮仓直供',rating:5,content:'米粒饱满口感好',buyer:'李**',at:'07-12'},
-    {product:'普洱茶饼',supplier:'茗茶坊',rating:2,content:'和描述不符，茶饼有霉味',buyer:'孙**',at:'07-11'},
-  ],
-  staff:[
-    {name:'超级管理员',phone:'138****0000',role:'超管',perms:'全部权限',status:'active',last:'07-14 10:30'},
-    {name:'运营小王',phone:'139****1111',role:'运营',perms:'Banner/通知/心搏/弹窗',status:'active',last:'07-14 09:00'},
-    {name:'客服小李',phone:'136****2222',role:'客服',perms:'订单/退款/纠纷',status:'active',last:'07-14 08:30'},
-  ],
-};
+// ===== Supabase 初始化 =====
+const SURL = 'https://backend.appmiaoda.com/projects/supabase333872604693708800';
+const SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoyMDk5MDI4NjMyLCJpc3MiOiJzdXBhYmFzZSIsInJvbGUiOiJhbm9uIiwic3ViIjoiYW5vbiJ9.L1x5wLfWjfvQatBtNb9Gp_vy3ng8XHbJCgL7lJ8i_8Y';
+const { createClient } = window.supabase;
+const sb = createClient(SURL, SKEY);
+
+// ===== Auth 检查 & 加载全平台数据 =====
+document.addEventListener('DOMContentLoaded', async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'admin-login.html'; return; }
+  const { data: profile } = await sb.from('profiles').select('role,nickname').eq('id', session.user.id).maybeSingle();
+  if (profile?.role !== 'admin') { await sb.auth.signOut(); window.location.href = 'admin-login.html'; return; }
+
+  const adminName = document.querySelector('.admin-name');
+  if (adminName) adminName.textContent = profile.nickname || '超级管理员';
+
+  await loadDashboardData();
+});
+
+async function loadDashboardData() {
+  // 并行加载所有平台数据
+  const [ordersRes, suppliersRes, productsRes, disputesRes, settlementsRes,
+         usersRes, bannersRes, couponsRes, notifRes, heartRes, popupsRes,
+         invoicesRes, pointsRes, reviewsRes, staffRes, withdrawalsRes] = await Promise.all([
+    sb.from('orders').select('*').order('created_at',{ascending:false}).limit(100),
+    sb.from('suppliers').select('*').order('created_at',{ascending:false}).limit(100),
+    sb.from('products').select('*').order('created_at',{ascending:false}).limit(100),
+    sb.from('disputes').select('*').order('created_at',{ascending:false}).limit(50),
+    sb.from('settlements').select('*').order('created_at',{ascending:false}).limit(100),
+    sb.from('profiles').select('*').order('created_at',{ascending:false}).limit(100),
+    sb.from('banners').select('*').order('sort_order',{ascending:true}).limit(20),
+    sb.from('coupons').select('*').order('created_at',{ascending:false}).limit(50),
+    sb.from('notifications').select('*').order('created_at',{ascending:false}).limit(50),
+    sb.from('heartbeat_messages').select('*').order('created_at',{ascending:false}).limit(50),
+    sb.from('popups').select('*').order('created_at',{ascending:false}).limit(20),
+    sb.from('invoices').select('*').order('created_at',{ascending:false}).limit(50),
+    sb.from('points_records').select('*').order('created_at',{ascending:false}).limit(50),
+    sb.from('reviews').select('*,products(name,supplier_id,suppliers(shop_name))').order('created_at',{ascending:false}).limit(50),
+    sb.from('staff_accounts').select('*').order('created_at',{ascending:false}).limit(20),
+    sb.from('withdrawals').select('*,suppliers(shop_name)').order('created_at',{ascending:false}).limit(50),
+  ]);
+
+  const orders = Array.isArray(ordersRes.data) ? ordersRes.data : [];
+  const suppliers = Array.isArray(suppliersRes.data) ? suppliersRes.data : [];
+  const products = Array.isArray(productsRes.data) ? productsRes.data : [];
+  const disputes = Array.isArray(disputesRes.data) ? disputesRes.data : [];
+  const settlements = Array.isArray(settlementsRes.data) ? settlementsRes.data : [];
+  const users = Array.isArray(usersRes.data) ? usersRes.data : [];
+  const banners = Array.isArray(bannersRes.data) ? bannersRes.data : [];
+  const coupons = Array.isArray(couponsRes.data) ? couponsRes.data : [];
+  const notifications = Array.isArray(notifRes.data) ? notifRes.data : [];
+  const heartbeats = Array.isArray(heartRes.data) ? heartRes.data : [];
+  const popups = Array.isArray(popupsRes.data) ? popupsRes.data : [];
+  const invoices = Array.isArray(invoicesRes.data) ? invoicesRes.data : [];
+  const points = Array.isArray(pointsRes.data) ? pointsRes.data : [];
+  const reviews = Array.isArray(reviewsRes.data) ? reviewsRes.data : [];
+  const staff = Array.isArray(staffRes.data) ? staffRes.data : [];
+  const withdrawals = Array.isArray(withdrawalsRes.data) ? withdrawalsRes.data : [];
+
+  // 汇总统计
+  const totalGMV = orders.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+parseFloat(o.total_amount||0),0);
+  const today = new Date().toISOString().slice(0,10);
+  const todayOrders = orders.filter(o=>o.created_at?.slice(0,10)===today).length;
+  const pendingSuppliers = suppliers.filter(s=>s.status==='pending').length;
+  const reviewingProducts = products.filter(p=>p.status==='reviewing').length;
+
+  // 更新顶部统计卡片
+  ['ov-gmv','ov-total-orders','ov-users','ov-suppliers'].forEach((id,i)=>{
+    const el = document.getElementById(id);
+    if (!el) return;
+    const vals = [totalGMV.toFixed(0), orders.length, users.length, suppliers.length];
+    el.textContent = vals[i];
+  });
+
+  // 概览最近订单
+  const recentOrders = document.getElementById('ov-recent-orders');
+  if (recentOrders) {
+    recentOrders.innerHTML = orders.slice(0,4).map(o=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid #F1F5F9">
+        <div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${o.product_name||'—'}</div><div style="font-size:11px;color:var(--muted)">${o.order_no}</div></div>
+        <div style="text-align:right"><div style="font-size:12.5px;font-weight:700;color:var(--primary)">¥${o.total_amount}</div>${statusBadge(o.status)}</div>
+      </div>`).join('') || '<div style="padding:24px;text-align:center;color:var(--muted)">暂无订单</div>';
+  }
+
+  // 概览待审核供应商
+  const pendingSup = document.getElementById('ov-pending-suppliers');
+  if (pendingSup) {
+    const pending = suppliers.filter(s=>s.status==='pending');
+    pendingSup.innerHTML = pending.map(s=>`
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid #F1F5F9">
+        <div style="flex:1"><div style="font-size:12.5px;font-weight:600">${s.shop_name||'—'}</div><div style="font-size:11px;color:var(--muted)">${s.business_type||'—'} · ${s.contact_name||'—'}</div></div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-sm btn-g" onclick="approveSupplier('${s.id}')">通过</button>
+          <button class="btn btn-sm btn-o" style="color:var(--danger)" onclick="rejectSupplier('${s.id}')">拒绝</button>
+        </div>
+      </div>`).join('') || '<div style="padding:24px;text-align:center;color:var(--muted)">暂无待审核供应商</div>';
+  }
+
+  // 渲染所有模块
+  renderOrders(orders);
+  renderSuppliers(suppliers);
+  renderProducts(products);
+  renderDisputes(disputes);
+  renderSettlements(settlements);
+  renderUsers(users);
+  renderRefunds(orders.filter(o=>parseFloat(o.refunded_amount||0)>0||o.status==='cancelled'));
+  renderBanners(banners);
+  renderCoupons(coupons);
+  renderNotifications(notifications);
+  renderHeartbeats(heartbeats);
+  renderPopups(popups);
+  renderInvoices(invoices);
+  renderPoints(points);
+  renderReviews(reviews);
+  renderStaff(staff);
+  renderWithdrawals(withdrawals);
+}
+
+// ===== 供应商审核操作 =====
+async function approveSupplier(id) {
+  if (!confirm('确认审核通过该供应商？')) return;
+  await sb.from('suppliers').update({status:'approved',updated_at:new Date().toISOString()}).eq('id',id);
+  await loadDashboardData();
+}
+async function rejectSupplier(id) {
+  if (!confirm('确认拒绝该供应商申请？')) return;
+  await sb.from('suppliers').update({status:'rejected',updated_at:new Date().toISOString()}).eq('id',id);
+  await loadDashboardData();
+}
+
+// ===== 商品审核操作 =====
+async function approveProduct(id) {
+  if (!confirm('确认审核通过该商品？')) return;
+  await sb.from('products').update({status:'selling',updated_at:new Date().toISOString()}).eq('id',id);
+  await loadDashboardData();
+}
+async function rejectProduct(id) {
+  if (!confirm('确认拒绝该商品？')) return;
+  await sb.from('products').update({status:'offline',updated_at:new Date().toISOString()}).eq('id',id);
+  await loadDashboardData();
+}
+
+// ===== 渲染函数 =====
+function empty(cols,msg){return `<tr><td colspan="${cols}" style="text-align:center;padding:24px;color:var(--muted)">${msg||'暂无数据'}</td></tr>`;}
+
+function renderOrders(list){
+  document.getElementById('orders-tbody').innerHTML=list.length
+    ?list.map(o=>`<tr><td style="font-family:monospace;font-size:11px">${o.order_no}</td><td>买家***</td><td>${o.product_name||'—'}</td><td>供应商***</td><td style="color:var(--primary);font-weight:700">¥${o.total_amount}</td><td>${statusBadge(o.status)}</td><td style="font-size:11px">${o.wechat_transaction_id?'微信支付':'—'}</td><td style="font-size:11px;color:var(--muted)">${(o.created_at||'').slice(0,16)}</td><td><div style="display:flex;gap:5px"><button class="btn btn-sm btn-o">详情</button></div></td></tr>`).join('')
+    :empty(9,'暂无订单数据');
+}
+
+function renderSuppliers(list){
+  document.getElementById('suppliers-tbody').innerHTML=list.length
+    ?list.map(s=>`<tr><td style="font-weight:600">${s.shop_name||'—'}</td><td>${s.contact_name||'—'}</td><td>${s.business_type||'—'}</td><td><span style="font-weight:700;color:var(--primary)">${s.credit_level||'—'}</span></td><td>¥${s.deposit||0}</td><td>${supStatusBadge(s.status)}</td><td style="font-size:11px;color:var(--muted)">${(s.created_at||'').slice(0,10)}</td><td><div style="display:flex;gap:5px">${s.status==='pending'?`<button class="btn btn-sm btn-g" onclick="approveSupplier('${s.id}')">通过</button><button class="btn btn-sm btn-o" style="color:var(--danger)" onclick="rejectSupplier('${s.id}')">拒绝</button>`:''}<button class="btn btn-sm btn-o">详情</button></div></td></tr>`).join('')
+    :empty(8,'暂无供应商数据');
+}
+
+function renderProducts(list){
+  document.getElementById('products-tbody').innerHTML=list.length
+    ?list.map(p=>`<tr><td>${p.name||'—'}</td><td>—</td><td>—</td><td style="color:var(--primary);font-weight:700">¥${p.flash_price||0}</td><td style="color:var(--muted);text-decoration:line-through">¥${p.original_price||p.market_price||0}</td><td>${p.stock||0}</td><td><span style="color:${(p.ai_confidence||0)>=90?'var(--success)':'var(--warning)'}">${p.ai_confidence||0}%</span></td><td>${prodStatusBadge(p.status)}</td><td><div style="display:flex;gap:5px">${p.status==='reviewing'?`<button class="btn btn-sm btn-g" onclick="approveProduct('${p.id}')">通过</button><button class="btn btn-sm btn-o" style="color:var(--danger)" onclick="rejectProduct('${p.id}')">拒绝</button>`:''}<button class="btn btn-sm btn-o">详情</button></div></td></tr>`).join('')
+    :empty(9,'暂无商品数据');
+}
+
+function renderDisputes(list){
+  document.getElementById('disputes-tbody').innerHTML=list.length
+    ?list.map(d=>`<tr><td style="font-family:monospace;font-size:11px">${(d.id||'').slice(0,8)}</td><td style="font-size:11px">${d.order_no||'—'}</td><td>买家***</td><td>供应商***</td><td>${d.reason||'—'}</td><td>${disStatusBadge(d.status)}</td><td style="font-size:11px;color:var(--muted)">${d.ai_verdict?.summary||d.final_verdict?.result||'—'}</td><td style="font-size:11px;color:var(--muted)">${(d.created_at||'').slice(0,10)}</td><td><button class="btn btn-sm btn-o">介入</button></td></tr>`).join('')
+    :empty(9,'暂无纠纷数据');
+}
+
+function renderSettlements(list){
+  document.getElementById('settlements-tbody').innerHTML=list.length
+    ?list.map(s=>{const net=(parseFloat(s.amount||0)-parseFloat(s.commission||0)-parseFloat(s.reserved_amount||0)).toFixed(2);return`<tr><td style="font-family:monospace;font-size:11px">${(s.id||'').slice(0,8)}</td><td>—</td><td style="font-size:11px">${s.order_no||'—'}</td><td>¥${parseFloat(s.amount||0).toFixed(2)}</td><td style="color:var(--danger)">-¥${parseFloat(s.commission||0).toFixed(2)}</td><td style="color:var(--warning)">¥${parseFloat(s.reserved_amount||0).toFixed(2)}</td><td style="color:var(--success);font-weight:700">¥${net}</td><td>${s.status==='settled'?'<span class="badge bs">已结算</span>':'<span class="badge bw">待结算</span>'}</td><td style="font-size:11px;color:var(--muted)">${(s.settled_at||'').slice(0,16)||'—'}</td></tr>`;}).join('')
+    :empty(9,'暂无结算记录');
+}
+
+function renderWithdrawals(list){
+  const tbody = document.getElementById('withdrawals-tbody');
+  if (!tbody) return;
+  tbody.innerHTML=list&&list.length
+    ?list.map(w=>`<tr><td>${w.suppliers?.shop_name||'—'}</td><td style="font-weight:700">¥${parseFloat(w.amount||0).toFixed(2)}</td><td>${w.bank_info?.bank_name||'—'}</td><td>${w.status==='completed'?'<span class="badge bs">已到账</span>':'<span class="badge bw">处理中</span>'}</td><td style="font-size:11px;color:var(--muted)">${(w.created_at||'').slice(0,10)}</td><td>${w.status==='pending'?'<button class="btn btn-sm btn-g">批准</button>':''}</td></tr>`).join('')
+    :empty(6,'暂无提现记录');
+}
+
+function renderUsers(list){
+  const consumers = list.filter(u=>u.role==='consumer'||u.role==='supplier'||u.role==='admin');
+  document.getElementById('users-tbody').innerHTML=consumers.length
+    ?consumers.map(u=>`<tr><td style="font-family:monospace;font-size:11px">${(u.id||'').slice(0,8)}</td><td>${u.nickname||'—'}</td><td>${u.phone||'—'}</td><td><span style="font-weight:700;color:var(--primary)">${u.role||'—'}</span></td><td>—</td><td>—</td><td style="font-size:11px;color:var(--muted)">${(u.created_at||'').slice(0,10)}</td><td><button class="btn btn-sm btn-o">详情</button></td></tr>`).join('')
+    :empty(8,'暂无用户数据');
+}
+
+function renderRefunds(list){
+  document.getElementById('refunds-tbody').innerHTML=list.length
+    ?list.map(r=>`<tr><td style="font-family:monospace;font-size:11px">${(r.id||'').slice(0,8)}</td><td style="font-size:11px">${r.order_no||'—'}</td><td>买家***</td><td>${r.product_name||'—'}</td><td style="color:var(--danger);font-weight:700">¥${parseFloat(r.refunded_amount||r.total_amount||0).toFixed(2)}</td><td>${r.remark||'退款'}</td><td>—</td><td>${statusBadge(r.status)}</td><td style="font-size:11px;color:var(--muted)">${(r.created_at||'').slice(0,10)}</td><td><div style="display:flex;gap:5px"><button class="btn btn-sm btn-g">批准</button><button class="btn btn-sm btn-o" style="color:var(--danger)">拒绝</button></div></td></tr>`).join('')
+    :empty(10,'暂无退款记录');
+}
+
+function renderBanners(list){
+  document.getElementById('banners-tbody').innerHTML=list.length
+    ?list.map(b=>`<tr><td style="font-weight:600">${b.title||'—'}</td><td><div style="width:60px;height:36px;background:#F1F5F9;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted)">${b.image_url?'图片':'无图'}</div></td><td style="font-size:11px">${b.link_url||'—'}</td><td>${b.sort_order||1}</td><td>${b.is_active?'<span class="badge bs">启用</span>':'<span class="badge bm">停用</span>'}</td><td><div style="display:flex;gap:5px"><button class="btn btn-sm btn-o">编辑</button><button class="btn btn-sm btn-o" style="color:var(--danger)" onclick="deleteBanner('${b.id}')">删除</button></div></td></tr>`).join('')
+    :empty(6,'暂无Banner数据');
+}
+
+async function deleteBanner(id){
+  if(!confirm('确认删除此Banner？'))return;
+  await sb.from('banners').delete().eq('id',id);
+  await loadDashboardData();
+}
+
+function renderCoupons(list){
+  document.getElementById('coupons-tbody').innerHTML=list.length
+    ?list.map(c=>`<tr><td style="font-weight:600">${c.name||'—'}</td><td>${c.type||'—'}</td><td style="color:var(--primary);font-weight:700">${c.type==='discount'?c.value*10+'折':'¥'+c.value}</td><td>¥${c.min_amount||0}</td><td>${c.issued_count||0}/${c.total_count||0}</td><td>—</td><td style="font-size:11px;color:var(--muted)">${c.end_at?(c.end_at||'').slice(0,10):'长期'}</td><td>${c.is_active?'<span class="badge bs">生效中</span>':'<span class="badge bm">已过期</span>'}</td><td><button class="btn btn-sm btn-o">编辑</button></td></tr>`).join('')
+    :empty(9,'暂无优惠券数据');
+}
+
+function renderNotifications(list){
+  document.getElementById('notifications-tbody').innerHTML=list.length
+    ?list.map(n=>`<tr><td style="font-weight:600">${n.title||'—'}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${n.content||'—'}</td><td>${n.type||'—'}</td><td>全部</td><td style="font-size:11px;color:var(--muted)">${(n.created_at||'').slice(0,16)}</td></tr>`).join('')
+    :empty(5,'暂无通知记录');
+}
+
+function renderHeartbeats(list){
+  document.getElementById('heartbeat-tbody').innerHTML=list.length
+    ?list.map(h=>`<tr><td>${h.content||'—'}</td><td><span class="badge bs">启用</span></td><td style="font-size:11px;color:var(--muted)">${(h.created_at||'').slice(0,16)}</td><td><div style="display:flex;gap:5px"><button class="btn btn-sm btn-o">停用</button><button class="btn btn-sm btn-o" style="color:var(--danger)">删除</button></div></td></tr>`).join('')
+    :empty(4,'暂无心搏数据');
+}
+
+function renderPopups(list){
+  document.getElementById('popups-tbody').innerHTML=list.length
+    ?list.map(p=>`<tr><td style="font-weight:600">${p.title||'—'}</td><td>${p.type||'—'}</td><td>${p.is_active?'<span class="badge bs">启用</span>':'<span class="badge bm">停用</span>'}</td><td style="font-size:11px;color:var(--muted)">${(p.created_at||'').slice(0,10)}</td><td><div style="display:flex;gap:5px"><button class="btn btn-sm btn-o">编辑</button><button class="btn btn-sm btn-o" style="color:var(--danger)">删除</button></div></td></tr>`).join('')
+    :empty(5,'暂无弹窗数据');
+}
+
+function renderInvoices(list){
+  document.getElementById('invoices-tbody').innerHTML=list.length
+    ?list.map(v=>`<tr><td style="font-family:monospace;font-size:11px">${(v.id||'').slice(0,8)}</td><td style="font-size:11px">${v.order_id?v.order_id.slice(0,8):'—'}</td><td>用户***</td><td>${v.type||'—'}</td><td>${v.title||'—'}</td><td style="font-size:11px">${v.tax_no||'—'}</td><td style="color:var(--primary);font-weight:700">¥${parseFloat(v.amount||0).toFixed(2)}</td><td style="font-size:11px">${v.email||'—'}</td><td>${v.status==='completed'?'<span class="badge bs">已开具</span>':'<span class="badge bw">处理中</span>'}</td><td>${v.status!=='completed'?'<button class="btn btn-sm btn-p">开具</button>':''}</td></tr>`).join('')
+    :empty(10,'暂无发票记录');
+}
+
+function renderPoints(list){
+  document.getElementById('points-tbody').innerHTML=list.length
+    ?list.map(p=>`<tr><td>用户***</td><td>${p.type||'—'}</td><td style="font-weight:700;color:${(p.delta||0)>0?'var(--success)':'var(--danger)'}">${(p.delta||0)>0?'+':''}${p.delta||0}</td><td>${p.balance||0}</td><td style="font-size:11px;color:var(--muted)">${p.order_id?p.order_id.slice(0,8):'—'}</td><td style="font-size:11px;color:var(--muted)">${(p.created_at||'').slice(0,16)}</td></tr>`).join('')
+    :empty(6,'暂无积分记录');
+}
+
+function renderReviews(list){
+  document.getElementById('reviews-tbody').innerHTML=list.length
+    ?list.map(r=>`<tr><td>${r.products?.name||'—'}</td><td>—</td><td>${'⭐'.repeat(r.rating||0)}</td><td style="max-width:200px">${r.content||'—'}</td><td style="color:var(--muted)">买家***</td><td style="font-size:11px;color:var(--muted)">${(r.created_at||'').slice(0,10)}</td><td>${(r.rating||5)<=2?'<button class="btn btn-sm btn-o" style="color:var(--danger)">屏蔽</button>':'<button class="btn btn-sm btn-o">查看</button>'}</td></tr>`).join('')
+    :empty(7,'暂无评价数据');
+}
+
+function renderStaff(list){
+  document.getElementById('staff-tbody').innerHTML=list.length
+    ?list.map(s=>`<tr><td style="font-weight:600">${s.name||'—'}</td><td>${s.phone||'—'}</td><td>${s.role||'—'}</td><td style="font-size:11px;color:var(--muted)">${s.permissions||'—'}</td><td><span class="badge bs">正常</span></td><td style="font-size:11px;color:var(--muted)">${(s.last_login_at||s.created_at||'').slice(0,16)}</td><td><button class="btn btn-sm btn-o">编辑</button></td></tr>`).join('')
+    :'<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">暂无员工账号（当前由系统管理员管理）</td></tr>';
+}
 
 // ===== Page Titles =====
-const PT = {overview:'数据总览',stats:'统计报表',orders:'订单管理',refunds:'退款管理',disputes:'纠纷仲裁',settlements:'结算管理',products:'商品审核',reviews:'评价管理',users:'消费者管理',suppliers:'供应商审核',credits:'信用管理',banners:'Banner管理',coupons:'优惠券管理',notifications:'通知管理',heartbeat:'心搏播报',popups:'弹窗管理',invoices:'发票管理',points:'积分管理',staff:'员工账号',sysconfig:'系统配置'};
+const PT = {overview:'数据总览',stats:'统计报表',orders:'订单管理',refunds:'退款管理',disputes:'纠纷仲裁',settlements:'结算管理',withdrawals:'提现管理',products:'商品审核',reviews:'评价管理',users:'消费者管理',suppliers:'供应商审核',credits:'信用管理',banners:'Banner管理',coupons:'优惠券管理',notifications:'通知管理',heartbeat:'心搏播报',popups:'弹窗管理',invoices:'发票管理',points:'积分管理',staff:'员工账号',sysconfig:'系统配置'};
 
 function sp(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -641,15 +812,15 @@ function sp(id){
 }
 
 function statusBadge(s){
-  const m={paid:'<span class="badge bi">待发货</span>',shipped:'<span class="badge bo">已发货</span>',completed:'<span class="badge bs">已完成</span>',cancelled:'<span class="badge bm">已取消</span>',pending:'<span class="badge bw">待付款</span>',pending_review:'<span class="badge bw">待审核</span>',processing:'<span class="badge bi">处理中</span>',completed_:'<span class="badge bs">已完成</span>'};
-  return m[s]||`<span class="badge bm">${s}</span>`;
+  const m={paid:'<span class="badge bi">待发货</span>',shipped:'<span class="badge bo">已发货</span>',completed:'<span class="badge bs">已完成</span>',cancelled:'<span class="badge bm">已取消</span>',pending:'<span class="badge bw">待付款</span>',pending_review:'<span class="badge bw">待审核</span>',processing:'<span class="badge bi">处理中</span>'};
+  return m[s]||`<span class="badge bm">${s||'—'}</span>`;
 }
 function supStatusBadge(s){
-  const m={approved:'<span class="badge bs">已通过</span>',pending:'<span class="badge bw">待审核</span>',rejected:'<span class="badge bd">已拒绝</span>',suspended:'<span class="badge bm">已暂停</span>'};
+  const m={approved:'<span class="badge bs">已通过</span>',pending:'<span class="badge bw">待审核</span>',rejected:'<span class="badge bd">已拒绝</span>',suspended:'<span class="badge bm">已暂停</span>',banned:'<span class="badge bd">已封禁</span>'};
   return m[s]||s;
 }
 function prodStatusBadge(s){
-  const m={selling:'<span class="badge bs">销售中</span>',reviewing:'<span class="badge bw">待审核</span>',draft:'<span class="badge bm">草稿</span>',offline:'<span class="badge bd">已下架</span>'};
+  const m={selling:'<span class="badge bs">销售中</span>',reviewing:'<span class="badge bw">待审核</span>',draft:'<span class="badge bm">草稿</span>',offline:'<span class="badge bd">已下架</span>',sold_out:'<span class="badge bo">售罄</span>'};
   return m[s]||s;
 }
 function disStatusBadge(s){
@@ -657,60 +828,7 @@ function disStatusBadge(s){
   return m[s]||s;
 }
 
-document.addEventListener('DOMContentLoaded',()=>{
-  // Overview recent orders
-  document.getElementById('ov-recent-orders').innerHTML = D.orders.slice(0,4).map(o=>`
-    <div style="display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid #F1F5F9">
-      <div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${o.product}</div><div style="font-size:11px;color:var(--muted)">${o.order_no}</div></div>
-      <div style="text-align:right"><div style="font-size:12.5px;font-weight:700;color:var(--primary)">¥${o.amount}</div>${statusBadge(o.status)}</div>
-    </div>`).join('');
-
-  document.getElementById('ov-pending-suppliers').innerHTML = D.suppliers.filter(s=>s.status==='pending').map(s=>`
-    <div style="display:flex;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid #F1F5F9">
-      <div style="flex:1"><div style="font-size:12.5px;font-weight:600">${s.name}</div><div style="font-size:11px;color:var(--muted)">${s.type} · ${s.contact}</div></div>
-      <div style="display:flex;gap:6px"><button class="btn btn-sm btn-g">通过</button><button class="btn btn-sm btn-o" style="color:var(--danger)">拒绝</button></div>
-    </div>`).join('');
-
-  renderOrders(D.orders);
-  renderSuppliers(D.suppliers);
-  renderProducts(D.products);
-  renderDisputes(D.disputes);
-  renderSettlements(D.settlements);
-  renderUsers(D.users);
-  renderRefunds(D.refunds);
-  renderBanners(D.banners);
-  renderCoupons(D.coupons);
-  renderNotifications(D.notifications);
-  renderHeartbeats(D.heartbeats);
-  renderPopups(D.popups);
-  renderInvoices(D.invoices);
-  renderPoints(D.points);
-  renderReviews(D.reviews);
-  renderStaff(D.staff);
-});
-
-function renderOrders(list){document.getElementById('orders-tbody').innerHTML=list.map(o=>`<tr><td style="font-family:monospace;font-size:11px">${o.order_no}</td><td>${o.buyer}</td><td>${o.product}</td><td>${o.supplier}</td><td style="color:var(--primary);font-weight:700">¥${o.amount}</td><td>${statusBadge(o.status)}</td><td style="font-size:11px">${o.pay}</td><td style="font-size:11px;color:var(--muted)">${o.created_at}</td><td><div style="display:flex;gap:5px"><button class="btn btn-sm btn-o">详情</button></div></td></tr>`).join('');}
-function renderSuppliers(list){document.getElementById('suppliers-tbody').innerHTML=list.map(s=>`<tr><td style="font-weight:600">${s.name}</td><td>${s.contact}</td><td>${s.type}</td><td><span style="font-weight:700;color:var(--primary)">${s.credit}</span></td><td>${s.deposit}</td><td>${supStatusBadge(s.status)}</td><td style="font-size:11px;color:var(--muted)">${s.created_at}</td><td><div style="display:flex;gap:5px">${s.status==='pending'?'<button class="btn btn-sm btn-g">通过</button><button class="btn btn-sm btn-o" style="color:var(--danger)">拒绝</button>':''}<button class="btn btn-sm btn-o">详情</button></div></td></tr>`).join('');}
-function renderProducts(list){document.getElementById('products-tbody').innerHTML=list.map(p=>`<tr><td>${p.name}</td><td>${p.supplier}</td><td>${p.category}</td><td style="color:var(--primary);font-weight:700">${p.flash_price}</td><td style="color:var(--muted);text-decoration:line-through">${p.original}</td><td>${p.stock}</td><td><span style="color:${parseInt(p.ai_conf)>=90?'var(--success)':'var(--warning)'}">${p.ai_conf}</span></td><td>${prodStatusBadge(p.status)}</td><td><div style="display:flex;gap:5px">${p.status==='reviewing'?'<button class="btn btn-sm btn-g">通过</button><button class="btn btn-sm btn-o" style="color:var(--danger)">拒绝</button>':''}<button class="btn btn-sm btn-o">详情</button></div></td></tr>`).join('');}
-function renderDisputes(list){document.getElementById('disputes-tbody').innerHTML=list.map(d=>`<tr><td style="font-family:monospace;font-size:11px">${d.id}</td><td style="font-size:11px">${d.order}</td><td>${d.buyer}</td><td>${d.supplier}</td><td>${d.reason}</td><td>${disStatusBadge(d.status)}</td><td style="font-size:11px;color:var(--muted)">${d.verdict}</td><td style="font-size:11px;color:var(--muted)">${d.created}</td><td><button class="btn btn-sm btn-o">介入</button></td></tr>`).join('');}
-function renderSettlements(list){document.getElementById('settlements-tbody').innerHTML=list.map(s=>`<tr><td style="font-family:monospace;font-size:11px">${s.id}</td><td>${s.supplier}</td><td style="font-size:11px">${s.order}</td><td>${s.amount}</td><td style="color:var(--danger)">${s.commission}</td><td style="color:var(--warning)">${s.reserved}</td><td style="color:var(--success);font-weight:700">${s.net}</td><td>${s.status==='settled'?'<span class="badge bs">已结算</span>':'<span class="badge bw">待结算</span>'}</td><td style="font-size:11px;color:var(--muted)">${s.at}</td></tr>`).join('');}
-function renderUsers(list){document.getElementById('users-tbody').innerHTML=list.map(u=>`<tr><td style="font-family:monospace;font-size:11px">${u.id}</td><td>${u.name}</td><td>${u.phone}</td><td><span style="font-weight:700;color:var(--primary)">${u.credit}</span></td><td>${u.orders}</td><td style="color:var(--success);font-weight:700">${u.saved}</td><td style="font-size:11px;color:var(--muted)">${u.reg}</td><td><button class="btn btn-sm btn-o">详情</button></td></tr>`).join('');}
-function renderRefunds(list){document.getElementById('refunds-tbody').innerHTML=list.map(r=>`<tr><td style="font-family:monospace;font-size:11px">${r.no}</td><td style="font-size:11px">${r.order}</td><td>${r.buyer}</td><td>${r.product}</td><td style="color:var(--danger);font-weight:700">${r.amount}</td><td>${r.reason}</td><td>${r.supplier}</td><td>${statusBadge(r.status)}</td><td style="font-size:11px;color:var(--muted)">${r.at}</td><td><div style="display:flex;gap:5px"><button class="btn btn-sm btn-g">批准</button><button class="btn btn-sm btn-o" style="color:var(--danger)">拒绝</button></div></td></tr>`).join('');}
-function renderBanners(list){document.getElementById('banners-tbody').innerHTML=list.map(b=>`<tr><td style="font-weight:600">${b.title}</td><td><div style="width:60px;height:36px;background:#F1F5F9;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted)">图片</div></td><td style="font-size:11px">${b.link}</td><td>${b.sort}</td><td>${b.status==='active'?'<span class="badge bs">启用</span>':'<span class="badge bm">停用</span>'}</td><td><div style="display:flex;gap:5px"><button class="btn btn-sm btn-o">编辑</button><button class="btn btn-sm btn-o" style="color:var(--danger)">删除</button></div></td></tr>`).join('');}
-function renderCoupons(list){document.getElementById('coupons-tbody').innerHTML=list.map(c=>`<tr><td style="font-weight:600">${c.name}</td><td>${c.type}</td><td style="color:var(--primary);font-weight:700">${c.value}</td><td>${c.min}</td><td>${c.claimed}</td><td>${c.used}</td><td style="font-size:11px;color:var(--muted)">${c.expire}</td><td>${c.status==='active'?'<span class="badge bs">生效中</span>':'<span class="badge bm">已过期</span>'}</td><td><button class="btn btn-sm btn-o">编辑</button></td></tr>`).join('');}
-function renderNotifications(list){document.getElementById('notifications-tbody').innerHTML=list.map(n=>`<tr><td style="font-weight:600">${n.title}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${n.content}</td><td>${n.type}</td><td>${n.target}</td><td style="font-size:11px;color:var(--muted)">${n.at}</td></tr>`).join('');}
-function renderHeartbeats(list){document.getElementById('heartbeat-tbody').innerHTML=list.map(h=>`<tr><td>${h.content}</td><td><span class="badge bs">启用</span></td><td style="font-size:11px;color:var(--muted)">${h.at}</td><td><div style="display:flex;gap:5px"><button class="btn btn-sm btn-o">停用</button><button class="btn btn-sm btn-o" style="color:var(--danger)">删除</button></div></td></tr>`).join('');}
-function renderPopups(list){document.getElementById('popups-tbody').innerHTML=list.map(p=>`<tr><td style="font-weight:600">${p.title}</td><td>${p.type}</td><td>${p.status==='active'?'<span class="badge bs">启用</span>':'<span class="badge bm">停用</span>'}</td><td style="font-size:11px;color:var(--muted)">${p.at}</td><td><div style="display:flex;gap:5px"><button class="btn btn-sm btn-o">编辑</button><button class="btn btn-sm btn-o" style="color:var(--danger)">删除</button></div></td></tr>`).join('');}
-function renderInvoices(list){document.getElementById('invoices-tbody').innerHTML=list.map(v=>`<tr><td style="font-family:monospace;font-size:11px">${v.no}</td><td style="font-size:11px">${v.order}</td><td>${v.user}</td><td>${v.type}</td><td>${v.title}</td><td style="font-size:11px">${v.tax_no}</td><td style="color:var(--primary);font-weight:700">${v.amount}</td><td style="font-size:11px">${v.email}</td><td>${v.status==='completed'?'<span class="badge bs">已开具</span>':'<span class="badge bw">处理中</span>'}</td><td>${v.status==='processing'?'<button class="btn btn-sm btn-p">开具</button>':''}</td></tr>`).join('');}
-function renderPoints(list){document.getElementById('points-tbody').innerHTML=list.map(p=>`<tr><td>${p.user}</td><td>${p.type}</td><td style="font-weight:700;color:${p.delta.startsWith('+')?'var(--success)':'var(--danger)'}">${p.delta}</td><td>${p.balance}</td><td style="font-size:11px;color:var(--muted)">${p.order}</td><td style="font-size:11px;color:var(--muted)">${p.at}</td></tr>`).join('');}
-function renderReviews(list){document.getElementById('reviews-tbody').innerHTML=list.map(r=>`<tr><td>${r.product}</td><td>${r.supplier}</td><td>${'⭐'.repeat(r.rating)}</td><td style="max-width:200px">${r.content}</td><td style="color:var(--muted)">${r.buyer}</td><td style="font-size:11px;color:var(--muted)">${r.at}</td><td>${r.rating<=2?'<button class="btn btn-sm btn-o" style="color:var(--danger)">屏蔽</button>':'<button class="btn btn-sm btn-o">查看</button>'}</td></tr>`).join('');}
-function renderStaff(list){document.getElementById('staff-tbody').innerHTML=list.map(s=>`<tr><td style="font-weight:600">${s.name}</td><td>${s.phone}</td><td>${s.role}</td><td style="font-size:11px;color:var(--muted)">${s.perms}</td><td><span class="badge bs">正常</span></td><td style="font-size:11px;color:var(--muted)">${s.last}</td><td><button class="btn btn-sm btn-o">编辑</button></td></tr>`).join('');}
-
-function filterOrders(status,btn){document.querySelectorAll('.of').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderOrders(status==='all'?D.orders:D.orders.filter(o=>o.status===status));}
-function filterSup(status,btn){document.querySelectorAll('.sf').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderSuppliers(status==='all'?D.suppliers:D.suppliers.filter(s=>s.status===status));}
-function filterProd(status,btn){document.querySelectorAll('.pf').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderProducts(status==='all'?D.products:D.products.filter(p=>p.status===status));}
-
-function logout(){if(confirm('确认退出登录？')){window.location.href='admin-login.html';}}
+function logout(){ sb.auth.signOut().then(()=>{ window.location.href='admin-login.html'; }); }
 </script>
 </body>
 </html>
