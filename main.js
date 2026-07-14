@@ -1,11 +1,3 @@
-// ===== Navbar scroll effect =====
-const navbar = document.getElementById('navbar');
-if (navbar) {
-  window.addEventListener('scroll', () => {
-    navbar.classList.toggle('scrolled', window.scrollY > 20);
-  });
-}
-
 // ===== Hamburger menu =====
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');
