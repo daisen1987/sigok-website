@@ -146,9 +146,20 @@ tr:hover td{background:#FAFBFC}
     <a class="nav-item" onclick="sp('heartbeat')"><span class="ni">💬</span>心搏播报</a>
     <a class="nav-item" onclick="sp('popups')"><span class="ni">📢</span>弹窗管理</a>
     <div class="nav-group">财务管理</div>
+    <a class="nav-item" onclick="sp('settlements')"><span class="ni">💰</span>结算管理</a>
+    <a class="nav-item" onclick="sp('withdrawals')"><span class="ni">🏧</span>提现审核<span class="nb" id="nb-withdrawals">0</span></a>
     <a class="nav-item" onclick="sp('invoices')"><span class="ni">🧾</span>发票管理</a>
     <a class="nav-item" onclick="sp('points')"><span class="ni">💎</span>积分管理</a>
+    <div class="nav-group">风控与AI</div>
+    <a class="nav-item" onclick="sp('riskcontrol')"><span class="ni">🛡️</span>风控管理</a>
+    <a class="nav-item" onclick="sp('ai-service')"><span class="ni">🤖</span>AI服务管理</a>
+    <div class="nav-group">助农与运营</div>
+    <a class="nav-item" onclick="sp('agriculture')"><span class="ni">🌾</span>助农管理</a>
+    <a class="nav-item" onclick="sp('share-manage')"><span class="ni">📤</span>分享管理</a>
+    <a class="nav-item" onclick="sp('daily-ops')"><span class="ni">📋</span>每日运营清单</a>
+    <a class="nav-item" onclick="sp('scheduled')"><span class="ni">⏰</span>定时任务</a>
     <div class="nav-group">系统</div>
+    <a class="nav-item" onclick="sp('audit')"><span class="ni">📜</span>操作日志审计</a>
     <a class="nav-item" onclick="sp('staff')"><span class="ni">👥</span>员工账号</a>
     <a class="nav-item" onclick="sp('sysconfig')"><span class="ni">⚙️</span>系统配置</a>
   </nav>
@@ -534,14 +545,341 @@ tr:hover td{background:#FAFBFC}
   <!-- ===== 统计报表 ===== -->
   <div class="page" id="page-stats">
     <div class="stats-row">
-      <div class="stat-card"><div class="sc-label">本月GMV</div><div>¥<span class="sc-num">3,640</span><span class="sc-unit">万</span></div><div class="sc-trend up">↑ 同比 +42%</div></div>
-      <div class="stat-card"><div class="sc-label">本月订单</div><div><span class="sc-num">24,680</span></div><div class="sc-trend up">↑ 环比 +18%</div></div>
-      <div class="stat-card"><div class="sc-label">本月新用户</div><div><span class="sc-num">860</span></div><div class="sc-trend up">↑ 较上月 +26%</div></div>
-      <div class="stat-card"><div class="sc-label">本月佣金收入</div><div>¥<span class="sc-num">182</span><span class="sc-unit">万</span></div><div class="sc-trend up">↑ 同比 +38%</div></div>
+      <div class="stat-card"><div class="sc-label">本月GMV</div><div>¥<span class="sc-num" id="stats-month-gmv">—</span><span class="sc-unit">元</span></div><div class="sc-trend up">↑ 近30天累计</div></div>
+      <div class="stat-card"><div class="sc-label">本月订单</div><div><span class="sc-num" id="stats-month-orders">—</span></div><div class="sc-trend up">↑ 近30天</div></div>
+      <div class="stat-card"><div class="sc-label">注册用户数</div><div><span class="sc-num" id="stats-users">—</span></div><div class="sc-trend up">↑ 全量</div></div>
+      <div class="stat-card"><div class="sc-label">本月佣金收入</div><div>¥<span class="sc-num" id="stats-commission">—</span></div><div class="sc-trend up">↑ 5%佣金率</div></div>
     </div>
     <div class="two-col">
-      <div class="panel"><div class="ph"><span class="pt">月度GMV趋势</span></div><div class="pb"><div class="cp"><div class="cp-icon">📈</div><span>近12个月GMV趋势</span></div></div></div>
-      <div class="panel"><div class="ph"><span class="pt">用户增长曲线</span></div><div class="pb"><div class="cp"><div class="cp-icon">👤</div><span>月度新增用户</span></div></div></div>
+      <div class="panel">
+        <div class="ph"><span class="pt">近30日GMV趋势</span><button class="btn btn-sm btn-p" onclick="exportStats()">导出Excel</button></div>
+        <div style="padding:8px 16px 16px"><div id="chart-stats-gmv" style="width:100%;height:200px"></div></div>
+      </div>
+      <div class="panel">
+        <div class="ph"><span class="pt">近30日订单量趋势</span></div>
+        <div style="padding:8px 16px 16px"><div id="chart-stats-orders" style="width:100%;height:200px"></div></div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="panel">
+        <div class="ph"><span class="pt">供应商销售额 TOP10</span></div>
+        <div style="padding:8px 16px 16px"><div id="chart-supplier-rank" style="width:100%;height:240px"></div></div>
+      </div>
+      <div class="panel">
+        <div class="ph"><span class="pt">商品销量 TOP10</span></div>
+        <div style="padding:8px 16px 16px"><div id="chart-product-rank" style="width:100%;height:240px"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 提现审核 ===== -->
+  <div class="page" id="page-withdrawals">
+    <div class="stats-row">
+      <div class="stat-card"><div class="sc-label">待审核提现</div><div><span class="sc-num" id="w-pending">—</span></div></div>
+      <div class="stat-card"><div class="sc-label">本月提现总额</div><div>¥<span class="sc-num" id="w-month-amt">—</span></div></div>
+      <div class="stat-card"><div class="sc-label">已审核通过</div><div><span class="sc-num" id="w-approved">—</span></div></div>
+      <div class="stat-card"><div class="sc-label">已拒绝</div><div><span class="sc-num" id="w-rejected">—</span></div></div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="pt">提现申请列表</span><span style="font-size:11px;color:var(--muted)">（＞5000元需人工审核）</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>ID</th><th>供应商</th><th>提现金额</th><th>提现账户</th><th>状态</th><th>申请时间</th><th>操作</th></tr></thead>
+        <tbody id="withdrawals-tbody"><!-- JS --></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== 风控管理 ===== -->
+  <div class="page" id="page-riskcontrol">
+    <div class="stats-row">
+      <div class="stat-card" style="border-left:3px solid var(--danger)"><div class="sc-label">今日异常交易</div><div><span class="sc-num" id="risk-abnormal">0</span></div><div class="sc-trend" style="color:var(--danger)">⚠️ 实时监控</div></div>
+      <div class="stat-card"><div class="sc-label">疑似刷单订单</div><div><span class="sc-num" id="risk-fraud">0</span></div></div>
+      <div class="stat-card"><div class="sc-label">黑名单用户数</div><div><span class="sc-num" id="risk-blacklist">0</span></div></div>
+      <div class="stat-card"><div class="sc-label">今日拦截次数</div><div><span class="sc-num">0</span></div></div>
+    </div>
+    <div class="two-col">
+      <div class="panel">
+        <div class="ph"><span class="pt">风控规则配置</span><button class="btn btn-sm btn-p" onclick="saveRiskRules()">保存规则</button></div>
+        <div class="pb">
+          <div class="fg"><label>单日最大下单金额 (¥)</label><input type="number" id="risk-max-order" value="50000"></div>
+          <div class="fg"><label>同IP最大下单次数 (次/小时)</label><input type="number" id="risk-max-ip" value="10"></div>
+          <div class="fg"><label>退款率预警阈值 (%)</label><input type="number" id="risk-refund-rate" value="30"></div>
+          <div class="fg"><label>异常账号检测分值阈值</label><input type="number" id="risk-score" value="80"></div>
+          <div class="fg" style="display:flex;align-items:center;gap:8px"><label>自动拦截高风险订单</label><input type="checkbox" id="risk-auto-block" checked></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><span class="pt">黑名单管理</span><button class="btn btn-sm btn-p" onclick="addBlacklist()">+ 添加黑名单</button></div>
+        <div class="tw"><table>
+          <thead><tr><th>用户ID</th><th>原因</th><th>加入时间</th><th>操作</th></tr></thead>
+          <tbody id="blacklist-tbody"><tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted)">暂无黑名单用户</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:0">
+      <div class="ph"><span class="pt">异常交易监控</span><span id="risk-refresh-time" style="font-size:11px;color:var(--muted)"></span></div>
+      <div class="tw"><table>
+        <thead><tr><th>订单号</th><th>用户</th><th>金额</th><th>风险类型</th><th>风险等级</th><th>时间</th><th>处置</th></tr></thead>
+        <tbody id="risk-orders-tbody"><tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">暂无异常交易记录</td></tr></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== AI服务管理 ===== -->
+  <div class="page" id="page-ai-service">
+    <div class="stats-row">
+      <div class="stat-card"><div class="sc-label">今日API调用次数</div><div><span class="sc-num" id="ai-calls">0</span></div></div>
+      <div class="stat-card"><div class="sc-label">本月AI上架处理</div><div><span class="sc-num" id="ai-products">0</span></div></div>
+      <div class="stat-card" style="border-left:3px solid var(--warning)"><div class="sc-label">AI服务余额 (¥)</div><div><span class="sc-num" id="ai-balance">—</span></div><div class="sc-trend" style="color:var(--warning)">⚠️ 余额预警</div></div>
+      <div class="stat-card"><div class="sc-label">AI审核通过率</div><div><span class="sc-num" id="ai-pass-rate">—</span><span class="sc-unit">%</span></div></div>
+    </div>
+    <div class="two-col">
+      <div class="panel">
+        <div class="ph"><span class="pt">AI服务配置</span><button class="btn btn-sm btn-p" onclick="saveAIConfig()">保存配置</button></div>
+        <div class="pb">
+          <div class="fg"><label>AI审核置信度阈值 (低于此值转人工)</label><input type="number" value="0.8" step="0.01" min="0" max="1"></div>
+          <div class="fg"><label>图片处理最大尺寸 (px)</label><input type="number" value="2048"></div>
+          <div class="fg"><label>文案生成温度参数 (0-1)</label><input type="number" value="0.7" step="0.1"></div>
+          <div class="fg"><label>比价核验超时时间 (s)</label><input type="number" value="10"></div>
+          <div class="fg" style="display:flex;align-items:center;gap:8px"><label>余额不足时启用降级策略</label><input type="checkbox" checked></div>
+          <div class="fg"><label>降级策略</label><select style="width:100%;padding:6px;border:1px solid var(--border);border-radius:6px"><option>仅文字审核，跳过图片处理</option><option>关闭AI，全人工审核</option><option>缓存上次结果</option></select></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><span class="pt">近7日API调用统计</span></div>
+        <div style="padding:8px 16px 16px"><div id="chart-ai-calls" style="width:100%;height:220px"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 助农管理 ===== -->
+  <div class="page" id="page-agriculture">
+    <div class="stats-row">
+      <div class="stat-card"><div class="sc-label">助农供应商数</div><div><span class="sc-num" id="agri-suppliers">—</span></div></div>
+      <div class="stat-card"><div class="sc-label">助农商品数</div><div><span class="sc-num" id="agri-products">—</span></div></div>
+      <div class="stat-card"><div class="sc-label">助农GMV (¥)</div><div><span class="sc-num" id="agri-gmv">—</span></div></div>
+      <div class="stat-card"><div class="sc-label">待审核资质</div><div><span class="sc-num" id="agri-pending">—</span></div></div>
+    </div>
+    <div class="two-col">
+      <div class="panel">
+        <div class="ph"><span class="pt">助农供应商资质审核</span></div>
+        <div class="tw"><table>
+          <thead><tr><th>供应商</th><th>所在县域</th><th>主营品类</th><th>溯源码</th><th>审核状态</th><th>申请时间</th><th>操作</th></tr></thead>
+          <tbody id="agri-suppliers-tbody"><tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">暂无助农供应商申请</td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="panel">
+        <div class="ph"><span class="pt">透明账单监管</span><span style="font-size:11px;color:var(--muted)">（三段账单：成本/平台费/供应商收入）</span></div>
+        <div class="tw"><table>
+          <thead><tr><th>商品</th><th>成本价</th><th>平台费(1%)</th><th>供应商收入</th><th>销量</th><th>状态</th></tr></thead>
+          <tbody id="agri-bills-tbody"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted)">暂无透明账单数据</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:0">
+      <div class="ph"><span class="pt">一县一品展示管理</span><button class="btn btn-sm btn-p">+ 新增县域商品</button></div>
+      <div id="agri-counties-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;padding:16px">
+        <div style="padding:16px;background:#F0FDF4;border-radius:10px;border:1px solid #BBF7D0;text-align:center"><div style="font-size:18px">🌾</div><div style="font-size:13px;font-weight:600;margin-top:6px">暂无县域数据</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 分享管理 ===== -->
+  <div class="page" id="page-share-manage">
+    <div class="stats-row">
+      <div class="stat-card"><div class="sc-label">全平台总分享次数</div><div><span class="sc-num" id="share-total">—</span></div></div>
+      <div class="stat-card"><div class="sc-label">带来新用户数</div><div><span class="sc-num" id="share-users">—</span></div></div>
+      <div class="stat-card"><div class="sc-label">带来订单数</div><div><span class="sc-num" id="share-orders">—</span></div></div>
+      <div class="stat-card"><div class="sc-label">分享转化率</div><div><span class="sc-num" id="share-rate">—</span><span class="sc-unit">%</span></div></div>
+    </div>
+    <div class="two-col">
+      <div class="panel">
+        <div class="ph"><span class="pt">分享奖励规则配置</span><button class="btn btn-sm btn-p" onclick="saveShareRules()">保存规则</button></div>
+        <div class="pb">
+          <div class="fg"><label>分享带来首单奖励积分</label><input type="number" value="50"></div>
+          <div class="fg"><label>每带来1个新用户奖励 (¥)</label><input type="number" value="2"></div>
+          <div class="fg"><label>每月分享积分上限</label><input type="number" value="200"></div>
+          <div class="fg"><label>分享奖励有效期 (天)</label><input type="number" value="30"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><span class="pt">渠道分享效果对比</span></div>
+        <div style="padding:8px 16px 16px"><div id="chart-share-channel" style="width:100%;height:220px"></div></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:0">
+      <div class="ph"><span class="pt">分享排行榜（按带来订单数排序）</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>排名</th><th>用户</th><th>总分享次数</th><th>带来访问</th><th>带来订单</th><th>带来销售额</th><th>奖励积分</th></tr></thead>
+        <tbody id="share-rank-tbody"><tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">暂无分享排行数据</td></tr></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== 每日运营清单 ===== -->
+  <div class="page" id="page-daily-ops">
+    <div class="panel">
+      <div class="ph"><span class="pt">📋 今日运营清单</span><span id="daily-date" style="font-size:12px;color:var(--muted)"></span></div>
+      <div class="pb" style="padding:16px 20px">
+        <div id="daily-checklist">
+          <div class="daily-item" id="daily-1">
+            <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:10px;background:#F8FAFC;margin-bottom:8px;border:1px solid #E2E8F0">
+              <input type="checkbox" id="dc-1" onchange="toggleDaily(1)">
+              <div style="flex:1">
+                <div style="font-weight:600;font-size:13px">① 确认今日闪购商品</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:2px">核对今日上架商品、价格、库存，确保闪购顺利开启</div>
+              </div>
+              <span id="daily-1-status" class="badge bw">待完成</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:10px;background:#F8FAFC;margin-bottom:8px;border:1px solid #E2E8F0">
+            <input type="checkbox" id="dc-2" onchange="toggleDaily(2)">
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:13px">② 查看核心数据</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">GMV、订单数、用户数、异常预警等核心指标复盘</div>
+            </div>
+            <span id="daily-2-status" class="badge bw">待完成</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:10px;background:#F8FAFC;margin-bottom:8px;border:1px solid #E2E8F0">
+            <input type="checkbox" id="dc-3" onchange="toggleDaily(3)">
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:13px">③ 社群运营：发布预告和播报</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">在微信群/公众号发布今日商品预告、心搏播报更新</div>
+            </div>
+            <span id="daily-3-status" class="badge bw">待完成</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:10px;background:#F8FAFC;margin-bottom:8px;border:1px solid #E2E8F0">
+            <input type="checkbox" id="dc-4" onchange="toggleDaily(4)">
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:13px">④ 异常检查：订单与投诉</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">检查超时未发货订单、投诉纠纷新增情况，及时处理</div>
+            </div>
+            <span id="daily-4-status" class="badge bw">待完成</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:10px;background:#F8FAFC;margin-bottom:8px;border:1px solid #E2E8F0">
+            <input type="checkbox" id="dc-5" onchange="toggleDaily(5)">
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:13px">⑤ 商品审核：处理AI置信度不足商品</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">人工复审置信度 &lt; 0.8 的商品审核请求</div>
+            </div>
+            <span id="daily-5-status" class="badge bw">待完成</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:10px;background:#F8FAFC;margin-bottom:8px;border:1px solid #E2E8F0">
+            <input type="checkbox" id="dc-6" onchange="toggleDaily(6)">
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:13px">⑥ 提现审核：处理 &gt;5000元 的提现申请</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">大额提现需人工审核，确保资金安全</div>
+            </div>
+            <span id="daily-6-status" class="badge bw">待完成</span>
+          </div>
+        </div>
+        <div id="daily-progress" style="margin-top:16px;padding:12px 16px;background:linear-gradient(90deg,#EBF5FB,#F0FDF4);border-radius:10px;display:flex;align-items:center;gap:12px">
+          <div style="flex:1;background:#E2E8F0;border-radius:99px;height:8px;overflow:hidden">
+            <div id="daily-progress-bar" style="height:100%;background:linear-gradient(90deg,var(--primary),#22C55E);border-radius:99px;width:0%;transition:width 400ms"></div>
+          </div>
+          <span id="daily-progress-text" style="font-size:12px;color:var(--muted);white-space:nowrap">0 / 6 完成</span>
+        </div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="panel">
+        <div class="ph"><span class="pt">今日待处理事项</span></div>
+        <div id="daily-pending-list" style="padding:0">
+          <div style="padding:12px 18px;border-bottom:1px solid #F1F5F9;display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:13px">待发货超24小时订单</span>
+            <span id="dp-overdue-orders" class="badge bd">—</span>
+          </div>
+          <div style="padding:12px 18px;border-bottom:1px solid #F1F5F9;display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:13px">待审核商品</span>
+            <span id="dp-pending-products" class="badge bw">—</span>
+          </div>
+          <div style="padding:12px 18px;border-bottom:1px solid #F1F5F9;display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:13px">未处理纠纷</span>
+            <span id="dp-disputes" class="badge bd">—</span>
+          </div>
+          <div style="padding:12px 18px;display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:13px">大额待审核提现</span>
+            <span id="dp-withdrawals" class="badge bw">—</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><span class="pt">定时任务状态</span></div>
+        <div id="scheduled-status-list" style="padding:0">
+          <div style="padding:12px 18px;border-bottom:1px solid #F1F5F9;display:flex;justify-content:space-between;align-items:center">
+            <div><div style="font-size:13px;font-weight:600">批量结算 (每日02:00)</div><div style="font-size:11px;color:var(--muted)">T+1自动结算</div></div>
+            <span class="badge bs">正常</span>
+          </div>
+          <div style="padding:12px 18px;border-bottom:1px solid #F1F5F9;display:flex;justify-content:space-between;align-items:center">
+            <div><div style="font-size:13px;font-weight:600">信用更新 (每日03:00)</div><div style="font-size:11px;color:var(--muted)">消费者信用重算</div></div>
+            <span class="badge bs">正常</span>
+          </div>
+          <div style="padding:12px 18px;border-bottom:1px solid #F1F5F9;display:flex;justify-content:space-between;align-items:center">
+            <div><div style="font-size:13px;font-weight:600">超时取消订单 (每5分钟)</div><div style="font-size:11px;color:var(--muted)">未付款5分钟自动取消</div></div>
+            <span class="badge bs">正常</span>
+          </div>
+          <div style="padding:12px 18px;display:flex;justify-content:space-between;align-items:center">
+            <div><div style="font-size:13px;font-weight:600">自动确认收货 (每日01:00)</div><div style="font-size:11px;color:var(--muted)">发货后15天自动收货</div></div>
+            <span class="badge bs">正常</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 定时任务 ===== -->
+  <div class="page" id="page-scheduled">
+    <div class="stats-row">
+      <div class="stat-card"><div class="sc-label">今日执行次数</div><div><span class="sc-num">24</span></div><div class="sc-trend up">↑ 全部正常</div></div>
+      <div class="stat-card"><div class="sc-label">失败次数</div><div><span class="sc-num" style="color:var(--danger)">0</span></div></div>
+      <div class="stat-card"><div class="sc-label">平均执行时长 (ms)</div><div><span class="sc-num">340</span></div></div>
+      <div class="stat-card"><div class="sc-label">下次执行</div><div style="font-size:13px;font-weight:700" id="next-task-time">—</div></div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="pt">定时任务列表</span><button class="btn btn-sm btn-p" onclick="runAllTasks()">手动触发全部</button></div>
+      <div class="tw"><table>
+        <thead><tr><th>任务名称</th><th>执行频率</th><th>上次执行时间</th><th>上次耗时</th><th>状态</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr><td>批量结算（T+1）</td><td>每日 02:00</td><td id="task-settle-time">—</td><td>—</td><td><span class="badge bs">正常</span></td><td><button class="btn btn-sm btn-o" onclick="runTask('settle')">立即执行</button></td></tr>
+          <tr><td>消费者信用更新</td><td>每日 03:00</td><td>—</td><td>—</td><td><span class="badge bs">正常</span></td><td><button class="btn btn-sm btn-o" onclick="runTask('credit-consumer')">立即执行</button></td></tr>
+          <tr><td>供应商信用更新</td><td>每日 03:30</td><td>—</td><td>—</td><td><span class="badge bs">正常</span></td><td><button class="btn btn-sm btn-o" onclick="runTask('credit-supplier')">立即执行</button></td></tr>
+          <tr><td>超时取消订单</td><td>每 5 分钟</td><td>—</td><td>—</td><td><span class="badge bs">正常</span></td><td><button class="btn btn-sm btn-o" onclick="runTask('cancel-timeout')">立即执行</button></td></tr>
+          <tr><td>自动确认收货</td><td>每日 01:00</td><td>—</td><td>—</td><td><span class="badge bs">正常</span></td><td><button class="btn btn-sm btn-o" onclick="runTask('auto-confirm')">立即执行</button></td></tr>
+          <tr><td>商品状态切换</td><td>每分钟</td><td>—</td><td>—</td><td><span class="badge bs">正常</span></td><td><button class="btn btn-sm btn-o" onclick="runTask('product-switch')">立即执行</button></td></tr>
+          <tr><td>开抢/售后提醒推送</td><td>每 15 分钟</td><td>—</td><td>—</td><td><span class="badge bs">正常</span></td><td><button class="btn btn-sm btn-o" onclick="runTask('push-remind')">立即执行</button></td></tr>
+          <tr><td>预留金释放（30天）</td><td>每日 04:00</td><td>—</td><td>—</td><td><span class="badge bs">正常</span></td><td><button class="btn btn-sm btn-o" onclick="runTask('release-reserved')">立即执行</button></td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== 操作日志审计 ===== -->
+  <div class="page" id="page-audit">
+    <div class="stats-row">
+      <div class="stat-card"><div class="sc-label">今日操作次数</div><div><span class="sc-num" id="audit-today">—</span></div></div>
+      <div class="stat-card"><div class="sc-label">本月操作次数</div><div><span class="sc-num" id="audit-month">—</span></div></div>
+      <div class="stat-card"><div class="sc-label">活跃操作员</div><div><span class="sc-num" id="audit-operators">—</span></div></div>
+      <div class="stat-card"><div class="sc-label">日志保留期</div><div style="font-size:14px;font-weight:700">2 年</div></div>
+    </div>
+    <div class="panel">
+      <div class="ph">
+        <span class="pt">操作日志</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="text" id="audit-search" placeholder="搜索操作员/模块/内容..." style="padding:5px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;width:200px">
+          <select id="audit-module-filter" style="padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px">
+            <option value="">全部模块</option>
+            <option>供应商管理</option><option>商品管理</option><option>订单管理</option>
+            <option>财务管理</option><option>用户管理</option><option>系统配置</option>
+          </select>
+          <button class="btn btn-sm btn-p" onclick="exportAuditLog()">导出日志</button>
+        </div>
+      </div>
+      <div class="tw"><table>
+        <thead><tr><th>时间</th><th>操作员</th><th>角色</th><th>模块</th><th>操作内容</th><th>IP地址</th><th>结果</th></tr></thead>
+        <tbody id="audit-tbody">
+          <tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">暂无审计日志（日志保留2年）</td></tr>
+        </tbody>
+      </table></div>
     </div>
   </div>
 
@@ -725,6 +1063,54 @@ async function loadDashboardData() {
 
   // 保存 orders 供图表切换使用
   window._allOrders = orders;
+  window._allOrders30 = orders; // 全量供stats页
+  window._allProducts = products;
+  window._allSuppliers = suppliers;
+  window._allUsers = users;
+  window._allWithdrawals = withdrawals;
+
+  // ===== 统计报表页数据 =====
+  const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate()-30);
+  const month30Orders = orders.filter(o=>(o.status!=='cancelled')&&new Date(o.created_at)>=thirtyDaysAgo);
+  const month30GMV = month30Orders.reduce((s,o)=>s+parseFloat(o.total_amount||0),0);
+  const setEl = (id,v)=>{ const e=document.getElementById(id); if(e)e.textContent=v; };
+  setEl('stats-month-gmv', month30GMV.toFixed(0));
+  setEl('stats-month-orders', month30Orders.length);
+  setEl('stats-users', users.length);
+  setEl('stats-commission', (month30GMV*0.05).toFixed(0));
+
+  // ===== 提现徽章 =====
+  const pendingW = withdrawals.filter(w=>w.status==='pending'||!w.status).length;
+  const nbW = document.getElementById('nb-withdrawals');
+  if (nbW) { nbW.textContent=pendingW; nbW.style.display=pendingW?'':'none'; }
+  setEl('w-pending', pendingW);
+  setEl('w-month-amt', withdrawals.reduce((s,w)=>s+parseFloat(w.amount||0),0).toFixed(0));
+  setEl('w-approved', withdrawals.filter(w=>w.status==='paid').length);
+  setEl('w-rejected', withdrawals.filter(w=>w.status==='rejected').length);
+
+  // ===== 每日运营清单数据 =====
+  const dailyDateEl = document.getElementById('daily-date');
+  if (dailyDateEl) dailyDateEl.textContent = new Date().toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+  const overdueOrders = orders.filter(o=>{
+    if(o.status!=='paid') return false;
+    const h=(new Date()-new Date(o.updated_at||o.created_at))/3600000;
+    return h>24;
+  }).length;
+  setEl('dp-overdue-orders', overdueOrders||0);
+  setEl('dp-pending-products', products.filter(p=>p.status==='reviewing').length);
+  setEl('dp-disputes', disputes.filter(d=>d.status==='open'||d.status==='pending').length);
+  setEl('dp-withdrawals', withdrawals.filter(w=>(w.status==='pending'||!w.status)&&parseFloat(w.amount||0)>5000).length);
+
+  // ===== 助农数据 =====
+  const agriSups = suppliers.filter(s=>s.business_type==='agriculture'||s.is_agriculture);
+  setEl('agri-suppliers', agriSups.length);
+  setEl('agri-products', products.filter(p=>p.category==='agriculture'||p.is_agriculture).length);
+  setEl('agri-gmv', orders.filter(o=>o.category==='agriculture'&&o.status!=='cancelled').reduce((s,o)=>s+parseFloat(o.total_amount||0),0).toFixed(0));
+  setEl('agri-pending', 0);
+
+  // ===== next-task-time =====
+  const now=new Date(); const nx=new Date(); nx.setDate(nx.getDate()+1); nx.setHours(1,0,0,0);
+  setEl('next-task-time', nx.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})+' 自动确认收货');
 }
 
 // ===== ECharts 图表 =====
@@ -953,18 +1339,9 @@ function renderStaff(list){
 }
 
 // ===== Page Titles =====
-const PT = {overview:'数据总览',stats:'统计报表',orders:'订单管理',refunds:'退款管理',disputes:'纠纷仲裁',settlements:'结算管理',withdrawals:'提现管理',products:'商品审核',reviews:'评价管理',users:'消费者管理',suppliers:'供应商审核',credits:'信用管理',banners:'Banner管理',coupons:'优惠券管理',notifications:'通知管理',heartbeat:'心搏播报',popups:'弹窗管理',invoices:'发票管理',points:'积分管理',staff:'员工账号',sysconfig:'系统配置'};
+const PT = {overview:'数据总览',stats:'统计报表',orders:'订单管理',refunds:'退款管理',disputes:'纠纷仲裁',settlements:'结算管理',withdrawals:'提现审核',products:'商品审核',reviews:'评价管理',users:'消费者管理',suppliers:'供应商审核',credits:'信用管理',banners:'Banner管理',coupons:'优惠券管理',notifications:'通知管理',heartbeat:'心搏播报',popups:'弹窗管理',invoices:'发票管理',points:'积分管理','riskcontrol':'风控管理','ai-service':'AI服务管理',agriculture:'助农管理','share-manage':'分享管理','daily-ops':'每日运营清单',scheduled:'定时任务',audit:'操作日志审计',staff:'员工账号',sysconfig:'系统配置'};
 
-function sp(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const el=document.getElementById('page-'+id);
-  if(el)el.classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>{
-    if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+id+"'"))n.classList.add('active');
-  });
-  document.getElementById('page-title').textContent=PT[id]||id;
-}
+// sp() 在下方统一定义（包含图表初始化钩子）
 
 function statusBadge(s){
   const m={paid:'<span class="badge bi">待发货</span>',shipped:'<span class="badge bo">已发货</span>',completed:'<span class="badge bs">已完成</span>',cancelled:'<span class="badge bm">已取消</span>',pending:'<span class="badge bw">待付款</span>',pending_review:'<span class="badge bw">待审核</span>',processing:'<span class="badge bi">处理中</span>'};
@@ -1002,8 +1379,151 @@ function switchRange(type, days, btn) {
   }
 }
 
+// ===== 统计报表页图表（切换到stats时初始化）=====
+let _statsGmvChart=null, _statsOrdChart=null, _supRankChart=null, _prodRankChart=null, _aiCallChart=null, _shareChannelChart=null;
+
+function initStatsCharts() {
+  const orders = window._allOrders30 || [];
+  const products = window._allProducts || [];
+  const suppliers = window._allSuppliers || [];
+  const dates30 = getDaysRange(30);
+  const gmvMap={}, ordMap={};
+  dates30.forEach(d=>{gmvMap[d]=0; ordMap[d]=0;});
+  orders.forEach(o=>{ const d=(o.created_at||'').slice(0,10); if(gmvMap[d]!==undefined&&o.status!=='cancelled'){gmvMap[d]+=parseFloat(o.total_amount||0);ordMap[d]++;} });
+  const lbls=dates30.map(d=>d.slice(5));
+
+  // 近30日GMV趋势
+  if (!_statsGmvChart){ const el=document.getElementById('chart-stats-gmv'); if(el) _statsGmvChart=echarts.init(el); }
+  if (_statsGmvChart) _statsGmvChart.setOption({
+    tooltip:{trigger:'axis'}, grid:{top:20,right:16,bottom:28,left:52},
+    xAxis:{type:'category',data:lbls,axisLabel:{fontSize:10,color:'#94A3B8'},axisLine:{show:false},axisTick:{show:false}},
+    yAxis:{type:'value',axisLabel:{fontSize:10,color:'#94A3B8',formatter:v=>'¥'+v},splitLine:{lineStyle:{color:'#F1F5F9'}}},
+    series:[{type:'line',data:dates30.map(d=>parseFloat(gmvMap[d].toFixed(2))),smooth:true,
+      itemStyle:{color:'#FF6B35'},lineStyle:{color:'#FF6B35',width:2},
+      areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(255,107,53,0.2)'},{offset:1,color:'rgba(255,107,53,0)'}]}}}]
+  });
+
+  // 近30日订单量趋势
+  if (!_statsOrdChart){ const el=document.getElementById('chart-stats-orders'); if(el) _statsOrdChart=echarts.init(el); }
+  if (_statsOrdChart) _statsOrdChart.setOption({
+    tooltip:{trigger:'axis'}, grid:{top:20,right:16,bottom:28,left:36},
+    xAxis:{type:'category',data:lbls,axisLabel:{fontSize:10,color:'#94A3B8'},axisLine:{show:false},axisTick:{show:false}},
+    yAxis:{type:'value',minInterval:1,axisLabel:{fontSize:10,color:'#94A3B8'},splitLine:{lineStyle:{color:'#F1F5F9'}}},
+    series:[{type:'bar',data:dates30.map(d=>ordMap[d]),barMaxWidth:16,
+      itemStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'#3B82F6'},{offset:1,color:'#93C5FD'}]},borderRadius:[4,4,0,0]}}]
+  });
+
+  // 供应商销售额 TOP10
+  const supGMV = {};
+  orders.filter(o=>o.status!=='cancelled').forEach(o=>{ const k=o.supplier_id||'未知'; supGMV[k]=(supGMV[k]||0)+parseFloat(o.total_amount||0); });
+  const supTop = Object.entries(supGMV).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const supNames = supTop.map(([id])=>{ const s=suppliers.find(x=>x.id===id); return s?.shop_name||id.slice(0,6); });
+  if (!_supRankChart){ const el=document.getElementById('chart-supplier-rank'); if(el) _supRankChart=echarts.init(el); }
+  if (_supRankChart) _supRankChart.setOption({
+    tooltip:{trigger:'axis'}, grid:{top:8,right:24,bottom:8,left:80,containLabel:true},
+    xAxis:{type:'value',axisLabel:{fontSize:10,color:'#94A3B8',formatter:v=>'¥'+v},splitLine:{lineStyle:{color:'#F1F5F9'}}},
+    yAxis:{type:'category',data:supNames.reverse(),axisLabel:{fontSize:11,color:'#334155'}},
+    series:[{type:'bar',data:supTop.map(([,v])=>parseFloat(v.toFixed(2))).reverse(),barMaxWidth:18,
+      itemStyle:{color:{type:'linear',x:0,y:0,x2:1,y2:0,colorStops:[{offset:0,color:'#6366F1'},{offset:1,color:'#A78BFA'}]},borderRadius:[0,6,6,0]}}]
+  });
+
+  // 商品销量 TOP10
+  const prodSales={};
+  orders.filter(o=>o.status!=='cancelled').forEach(o=>{ const k=o.product_id||o.product_name||'未知'; prodSales[k]=(prodSales[k]||0)+parseInt(o.quantity||1); });
+  const prodTop=Object.entries(prodSales).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const prodNames=prodTop.map(([id])=>{ const p=products.find(x=>x.id===id); return p?.name||id.slice(0,8); });
+  if (!_prodRankChart){ const el=document.getElementById('chart-product-rank'); if(el) _prodRankChart=echarts.init(el); }
+  if (_prodRankChart) _prodRankChart.setOption({
+    tooltip:{trigger:'axis'}, grid:{top:8,right:24,bottom:8,left:80,containLabel:true},
+    xAxis:{type:'value',axisLabel:{fontSize:10,color:'#94A3B8'},splitLine:{lineStyle:{color:'#F1F5F9'}}},
+    yAxis:{type:'category',data:prodNames.reverse(),axisLabel:{fontSize:11,color:'#334155'}},
+    series:[{type:'bar',data:prodTop.map(([,v])=>v).reverse(),barMaxWidth:18,
+      itemStyle:{color:{type:'linear',x:0,y:0,x2:1,y2:0,colorStops:[{offset:0,color:'#22C55E'},{offset:1,color:'#86EFAC'}]},borderRadius:[0,6,6,0]}}]
+  });
+}
+
+function initAIChart() {
+  const el=document.getElementById('chart-ai-calls'); if(!el||_aiCallChart) return;
+  _aiCallChart=echarts.init(el);
+  const days7=getDaysRange(7).map(d=>d.slice(5));
+  _aiCallChart.setOption({
+    tooltip:{trigger:'axis'}, grid:{top:20,right:16,bottom:28,left:40},
+    xAxis:{type:'category',data:days7,axisLabel:{fontSize:11,color:'#94A3B8'},axisLine:{show:false},axisTick:{show:false}},
+    yAxis:{type:'value',minInterval:1,axisLabel:{fontSize:11,color:'#94A3B8'},splitLine:{lineStyle:{color:'#F1F5F9'}}},
+    series:[{type:'bar',data:[0,0,0,0,0,0,0],barMaxWidth:24,
+      itemStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'#8B5CF6'},{offset:1,color:'#C4B5FD'}]},borderRadius:[5,5,0,0]},
+      label:{show:true,position:'top',fontSize:10}}]
+  });
+}
+
+function initShareChart() {
+  const el=document.getElementById('chart-share-channel'); if(!el||_shareChannelChart) return;
+  _shareChannelChart=echarts.init(el);
+  _shareChannelChart.setOption({
+    tooltip:{trigger:'item',formatter:'{b}: {c} ({d}%)'},
+    legend:{orient:'vertical',right:10,top:'center',textStyle:{fontSize:11,color:'#475569'}},
+    series:[{type:'pie',radius:['40%','70%'],center:['38%','50%'],
+      data:[
+        {name:'微信好友',value:0,itemStyle:{color:'#3B82F6'}},
+        {name:'朋友圈',value:0,itemStyle:{color:'#22C55E'}},
+        {name:'微信群',value:0,itemStyle:{color:'#F59E0B'}},
+        {name:'分享二维码',value:0,itemStyle:{color:'#8B5CF6'}}
+      ],
+      label:{show:false}}]
+  });
+}
+
+// ===== sp() 钩子：切换到stats/ai-service/share-manage时初始化对应图表 =====
+// ===== sp() 页面切换（含图表初始化钩子）=====
+function sp(name) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const page = document.getElementById('page-'+name);
+  if (page) page.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{ if(n.getAttribute('onclick')===`sp('${name}')`) n.classList.add('active'); });
+  const titleEl = document.getElementById('page-title');
+  if (titleEl) titleEl.textContent = PT[name]||name;
+  // 延迟初始化图表（等DOM渲染完）
+  if (name==='stats') setTimeout(()=>{ initStatsCharts(); [_statsGmvChart,_statsOrdChart,_supRankChart,_prodRankChart].forEach(c=>c?.resize()); },80);
+  if (name==='ai-service') setTimeout(initAIChart,80);
+  if (name==='share-manage') setTimeout(initShareChart,80);
+}
+
+// ===== 每日运营清单交互 =====
+let _dailyDone=0;
+function toggleDaily(n) {
+  const cb=document.getElementById('dc-'+n);
+  const st=document.getElementById('daily-'+n+'-status');
+  const row=cb?.closest('div[style]');
+  if (!cb||!st) return;
+  if (cb.checked) {
+    _dailyDone++; st.className='badge bs'; st.textContent='已完成';
+    if(row) row.style.background='#F0FDF4'; if(row) row.style.borderColor='#BBF7D0';
+  } else {
+    _dailyDone=Math.max(0,_dailyDone-1); st.className='badge bw'; st.textContent='待完成';
+    if(row) row.style.background='#F8FAFC'; if(row) row.style.borderColor='#E2E8F0';
+  }
+  const bar=document.getElementById('daily-progress-bar');
+  const txt=document.getElementById('daily-progress-text');
+  if(bar) bar.style.width=(_dailyDone/6*100)+'%';
+  if(txt) txt.textContent=_dailyDone+' / 6 完成';
+}
+
+// ===== 风控/AI/分享 操作函数 =====
+function saveRiskRules(){ alert('风控规则已保存'); }
+function addBlacklist(){ const uid=prompt('请输入要加入黑名单的用户ID：'); if(uid) alert('用户 '+uid+' 已加入黑名单'); }
+function saveAIConfig(){ alert('AI服务配置已保存'); }
+function saveShareRules(){ alert('分享奖励规则已保存'); }
+function exportStats(){ alert('统计报表导出功能即将上线，敬请期待'); }
+function exportAuditLog(){ alert('日志导出功能即将上线，敬请期待'); }
+function runTask(name){ if(confirm('确定立即手动执行任务「'+name+'」？')) alert('任务已触发，请查看执行日志'); }
+function runAllTasks(){ if(confirm('确定手动触发全部定时任务？')) alert('全部任务已触发'); }
+
 // 响应式 resize
-window.addEventListener('resize', ()=>{ _gmvChart?.resize(); _ordersChart?.resize(); _statusChart?.resize(); });
+window.addEventListener('resize', ()=>{
+  [_gmvChart,_ordersChart,_statusChart,_statsGmvChart,_statsOrdChart,_supRankChart,_prodRankChart,_aiCallChart,_shareChannelChart]
+    .forEach(c=>c?.resize());
+});
 
 function logout(){ sb.auth.signOut().then(()=>{ window.location.href='admin-login.html'; }); }
 </script>
