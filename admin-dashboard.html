@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>管理后台 - 闪淘严选</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#FF6B35;--primary-dark:#E85A1F;--primary-light:#FF8C5A;
+  --accent:#0D7CBB;--bg:#F0F4F8;--sidebar:#0F1923;--white:#fff;
+  --fg:#1A2236;--muted:#6B7A8D;--border:#E2E8F0;
+  --success:#22C55E;--warning:#F59E0B;--danger:#EF4444;--info:#3B82F6;
+  --font:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--fg);display:flex;min-height:100vh}
+
+/* ===== Sidebar ===== */
+.sidebar{width:220px;background:var(--sidebar);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;overflow-y:auto}
+.sidebar-logo{padding:20px 18px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff;flex-shrink:0}
+.logo-text{font-size:14px;font-weight:700;color:#fff;line-height:1.2}
+.logo-sub{font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px}
+.admin-info{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;gap:8px}
+.admin-avatar{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#FF6B35,#C2410C);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.admin-name{font-size:12px;font-weight:600;color:#fff}
+.admin-role{font-size:10px;color:rgba(255,255,255,0.4);margin-top:1px}
+.sidebar-nav{flex:1;padding:8px 0}
+.nav-group{padding:6px 18px 2px;font-size:10px;color:rgba(255,255,255,0.28);letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:8px;padding:9px 18px;color:rgba(255,255,255,0.5);cursor:pointer;transition:all 160ms;text-decoration:none;font-size:12.5px;position:relative}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,0.06)}
+.nav-item.active{color:#fff;background:rgba(255,107,53,0.16);border-right:2px solid var(--primary)}
+.nav-item.active .ni{color:var(--primary-light)}
+.ni{font-size:14px;width:18px;text-align:center}
+.nb{margin-left:auto;background:var(--danger);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px}
+.sidebar-footer{padding:14px 18px;border-top:1px solid rgba(255,255,255,0.06)}
+.btn-logout{width:100%;padding:9px;border-radius:7px;border:1px solid rgba(255,255,255,0.12);background:transparent;color:rgba(255,255,255,0.45);font-size:12px;cursor:pointer;transition:all 160ms;font-family:var(--font)}
+.btn-logout:hover{color:#fff;border-color:rgba(255,255,255,0.3)}
+
+/* ===== Main ===== */
+.main{margin-left:220px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-title{font-size:15px;font-weight:700}
+.topbar-right{display:flex;align-items:center;gap:14px}
+.notif-btn{position:relative;cursor:pointer;font-size:16px;color:var(--muted)}
+.notif-dot{position:absolute;top:-1px;right:-1px;width:7px;height:7px;background:var(--danger);border-radius:50%;border:2px solid #fff}
+.page{padding:24px;display:none}
+.page.active{display:block}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat-card{background:var(--white);border-radius:12px;padding:18px;border:1px solid var(--border);position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;top:0;right:0;width:70px;height:70px;border-radius:50%;background:var(--sc-color,#FF6B35);opacity:0.06;transform:translate(20px,-20px)}
+.sc-label{font-size:11px;color:var(--muted);font-weight:500;margin-bottom:7px}
+.sc-num{font-size:24px;font-weight:800;color:var(--fg);line-height:1}
+.sc-unit{font-size:13px;color:var(--muted);margin-left:1px}
+.sc-trend{font-size:11px;margin-top:7px}
+.sc-trend.up{color:var(--success)}.sc-trend.down{color:var(--danger)}.sc-trend.neutral{color:var(--muted)}
+.sc-icon{position:absolute;top:16px;right:16px;font-size:22px;opacity:0.65}
+
+/* Panel */
+.panel{background:var(--white);border-radius:12px;border:1px solid var(--border);overflow:hidden;margin-bottom:18px}
+.ph{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.pt{font-size:13.5px;font-weight:700}
+.pb{padding:18px}
+
+/* Table */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;font-weight:600;color:var(--muted);text-align:left;padding:9px 12px;background:#F8FAFC;border-bottom:1px solid var(--border)}
+td{padding:11px 12px;font-size:12.5px;border-bottom:1px solid #F1F5F9;color:var(--fg);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#FAFBFC}
+
+/* Badge */
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:10.5px;font-weight:600;gap:3px}
+.bs{background:#DCFCE7;color:#16A34A}.bw{background:#FEF9C3;color:#A16207}
+.bd{background:#FEE2E2;color:#DC2626}.bi{background:#DBEAFE;color:#1D4ED8}
+.bm{background:#F1F5F9;color:#64748B}.bo{background:#FFF7ED;color:#C2410C}
+.bp{background:#F5F3FF;color:#7C3AED}
+
+/* Button */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all 160ms;font-family:var(--font)}
+.btn-p{background:var(--primary);color:#fff}.btn-p:hover{background:var(--primary-dark)}
+.btn-a{background:var(--accent);color:#fff}.btn-a:hover{background:#0B6FAA}
+.btn-g{background:var(--success);color:#fff}.btn-g:hover{background:#16A34A}
+.btn-r{background:var(--danger);color:#fff}.btn-r:hover{background:#DC2626}
+.btn-o{background:transparent;border:1px solid var(--border);color:var(--fg)}.btn-o:hover{background:#F8FAFC}
+.btn-sm{padding:4px 10px;font-size:11px;border-radius:6px}
+
+/* Form */
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.fg label{font-size:11.5px;font-weight:600;color:var(--fg)}
+.fg input,.fg select,.fg textarea{padding:8px 11px;border:1px solid var(--border);border-radius:7px;font-size:12.5px;font-family:var(--font);color:var(--fg);background:#fff;outline:none;transition:border 160ms}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent)}
+
+/* Grid */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+
+/* Chart placeholder */
+.cp{background:linear-gradient(135deg,#F8FAFC,#EEF2FF);border-radius:10px;height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);font-size:12px;gap:6px}
+.cp-icon{font-size:28px}
+
+/* Alert card */
+.alert-card{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:10px;margin-bottom:10px}
+.alert-warn{background:#FFFBEB;border:1px solid #FDE68A}
+.alert-danger{background:#FEF2F2;border:1px solid #FECACA}
+.alert-info{background:#EFF6FF;border:1px solid #BFDBFE}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.13);border-radius:4px}
+</style>
+</head>
+<body>
+
+<!-- ===== Sidebar ===== -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">闪</div>
+    <div><div class="logo-text">闪淘严选</div><div class="logo-sub">平台管理中心</div></div>
+  </div>
+  <div class="admin-info">
+    <div class="admin-avatar">👑</div>
+    <div><div class="admin-name" id="admin-name">超级管理员</div><div class="admin-role">全平台管理权限</div></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group">数据中心</div>
+    <a class="nav-item active" onclick="sp('overview')"><span class="ni">📊</span>数据总览</a>
+    <a class="nav-item" onclick="sp('stats')"><span class="ni">📈</span>统计报表</a>
+    <div class="nav-group">交易管理</div>
+    <a class="nav-item" onclick="sp('orders')"><span class="ni">📦</span>订单管理<span class="nb" id="nb-orders">5</span></a>
+    <a class="nav-item" onclick="sp('refunds')"><span class="ni">↩️</span>退款管理<span class="nb" id="nb-refunds">2</span></a>
+    <a class="nav-item" onclick="sp('disputes')"><span class="ni">⚖️</span>纠纷仲裁<span class="nb" id="nb-disputes">3</span></a>
+    <a class="nav-item" onclick="sp('settlements')"><span class="ni">💰</span>结算管理</a>
+    <div class="nav-group">商品管理</div>
+    <a class="nav-item" onclick="sp('products')"><span class="ni">🛍️</span>商品审核<span class="nb" id="nb-products">4</span></a>
+    <a class="nav-item" onclick="sp('reviews')"><span class="ni">⭐</span>评价管理</a>
+    <div class="nav-group">用户管理</div>
+    <a class="nav-item" onclick="sp('users')"><span class="ni">👤</span>消费者管理</a>
+    <a class="nav-item" onclick="sp('suppliers')"><span class="ni">🏭</span>供应商审核<span class="nb" id="nb-suppliers">2</span></a>
+    <a class="nav-item" onclick="sp('credits')"><span class="ni">🏆</span>信用管理</a>
+    <div class="nav-group">运营工具</div>
+    <a class="nav-item" onclick="sp('banners')"><span class="ni">🖼️</span>Banner管理</a>
+    <a class="nav-item" onclick="sp('coupons')"><span class="ni">🎫</span>优惠券管理</a>
+    <a class="nav-item" onclick="sp('notifications')"><span class="ni">🔔</span>通知管理</a>
+    <a class="nav-item" onclick="sp('heartbeat')"><span class="ni">💬</span>心搏播报</a>
+    <a class="nav-item" onclick="sp('popups')"><span class="ni">📢</span>弹窗管理</a>
+    <div class="nav-group">财务管理</div>
+    <a class="nav-item" onclick="sp('invoices')"><span class="ni">🧾</span>发票管理</a>
+    <a class="nav-item" onclick="sp('points')"><span class="ni">💎</span>积分管理</a>
+    <div class="nav-group">系统</div>
+    <a class="nav-item" onclick="sp('staff')"><span class="ni">👥</span>员工账号</a>
+    <a class="nav-item" onclick="sp('sysconfig')"><span class="ni">⚙️</span>系统配置</a>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="btn-logout" onclick="logout()">🚪 退出登录</button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">数据总览</div>
+    <div class="topbar-right">
+      <div class="notif-btn">🔔<span class="notif-dot"></span></div>
+      <span style="font-size:12px;color:var(--muted)" id="topbar-admin">admin</span>
+    </div>
+  </div>
+
+  <!-- ===== 数据总览 ===== -->
+  <div class="page active" id="page-overview">
+    <div class="stats-row">
+      <div class="stat-card" style="--sc-color:#FF6B35"><div class="sc-label">今日GMV</div><div>¥<span class="sc-num" id="ov-gmv">142</span><span class="sc-unit">万</span></div><div class="sc-trend up">↑ 较昨日 +11%</div><div class="sc-icon">💰</div></div>
+      <div class="stat-card" style="--sc-color:#22C55E"><div class="sc-label">今日订单量</div><div><span class="sc-num" id="ov-orders">12,580</span></div><div class="sc-trend up">↑ 今日新增 +234</div><div class="sc-icon">📦</div></div>
+      <div class="stat-card" style="--sc-color:#3B82F6"><div class="sc-label">平台注册用户</div><div><span class="sc-num">3,240</span><span class="sc-unit">人</span></div><div class="sc-trend up">↑ 今日新增 +28</div><div class="sc-icon">👤</div></div>
+      <div class="stat-card" style="--sc-color:#F59E0B"><div class="sc-label">入驻供应商</div><div><span class="sc-num">856</span></div><div class="sc-trend up">↑ 本周新增 +12</div><div class="sc-icon">🏭</div></div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="sc-label">今日平台佣金</div><div>¥<span class="sc-num">7,100</span></div><div class="sc-trend up">↑ 5%佣金率</div></div>
+      <div class="stat-card"><div class="sc-label">待处理纠纷</div><div><span class="sc-num">3</span><span class="sc-unit">件</span></div><div class="sc-trend down">需及时处理</div></div>
+      <div class="stat-card"><div class="sc-label">待审核供应商</div><div><span class="sc-num">2</span><span class="sc-unit">家</span></div><div class="sc-trend neutral">等待审批</div></div>
+      <div class="stat-card"><div class="sc-label">平台综合评分</div><div><span class="sc-num">4.88</span><span class="sc-unit">分</span></div><div class="sc-trend up">↑ NPS +0.06</div></div>
+    </div>
+    <!-- 预警 -->
+    <div style="margin-bottom:18px">
+      <div class="alert-card alert-warn"><span style="font-size:16px">⚠️</span><div><div style="font-size:12.5px;font-weight:700;color:#92400E">待处理事项</div><div style="font-size:12px;color:#A16207;margin-top:2px">3件纠纷待仲裁 · 2家供应商待审核 · 4件商品待上架审核</div></div></div>
+    </div>
+    <div class="two-col">
+      <div class="panel"><div class="ph"><span class="pt">近7日GMV趋势</span></div><div class="pb"><div class="cp"><div class="cp-icon">📈</div><span>GMV走势图（接入ECharts）</span></div></div></div>
+      <div class="panel"><div class="ph"><span class="pt">最新订单动态</span></div><div id="ov-recent-orders" style="padding:0"><!-- JS --></div></div>
+    </div>
+    <div class="two-col">
+      <div class="panel"><div class="ph"><span class="pt">供应商待审核</span><button class="btn btn-sm btn-a" onclick="sp('suppliers')">全部查看</button></div><div id="ov-pending-suppliers" style="padding:0"><!-- JS --></div></div>
+      <div class="panel"><div class="ph"><span class="pt">平台数据分布</span></div><div class="pb"><div class="cp"><div class="cp-icon">🥧</div><span>分类销售占比</span></div></div></div>
+    </div>
+  </div>
+
+  <!-- ===== 订单管理 ===== -->
+  <div class="page" id="page-orders">
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+      <button class="btn btn-sm btn-o of active" onclick="filterOrders('all',this)">全部</button>
+      <button class="btn btn-sm btn-o of" onclick="filterOrders('pending',this)">待付款</button>
+      <button class="btn btn-sm btn-o of" onclick="filterOrders('paid',this)">待发货</button>
+      <button class="btn btn-sm btn-o of" onclick="filterOrders('shipped',this)">已发货</button>
+      <button class="btn btn-sm btn-o of" onclick="filterOrders('completed',this)">已完成</button>
+      <button class="btn btn-sm btn-o of" onclick="filterOrders('cancelled',this)">已取消</button>
+      <input placeholder="搜索订单号/用户/商品..." style="padding:4px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;flex:1;min-width:180px;outline:none;margin-left:auto">
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="pt">订单列表</span><button class="btn btn-sm btn-p">导出Excel</button></div>
+      <div class="tw"><table>
+        <thead><tr><th>订单号</th><th>买家</th><th>商品</th><th>供应商</th><th>金额</th><th>状态</th><th>支付方式</th><th>下单时间</th><th>操作</th></tr></thead>
+        <tbody id="orders-tbody"><!-- JS --></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== 供应商审核 ===== -->
+  <div class="page" id="page-suppliers">
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+      <button class="btn btn-sm btn-o sf active" onclick="filterSup('all',this)">全部</button>
+      <button class="btn btn-sm btn-o sf" onclick="filterSup('pending',this)">待审核</button>
+      <button class="btn btn-sm btn-o sf" onclick="filterSup('approved',this)">已通过</button>
+      <button class="btn btn-sm btn-o sf" onclick="filterSup('rejected',this)">已拒绝</button>
+      <button class="btn btn-sm btn-o sf" onclick="filterSup('suspended',this)">已暂停</button>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="pt">供应商列表</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>店铺名称</th><th>联系人</th><th>经营类型</th><th>信用等级</th><th>保证金</th><th>入驻状态</th><th>申请时间</th><th>操作</th></tr></thead>
+        <tbody id="suppliers-tbody"><!-- JS --></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== 商品审核 ===== -->
+  <div class="page" id="page-products">
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+      <button class="btn btn-sm btn-o pf active" onclick="filterProd('all',this)">全部</button>
+      <button class="btn btn-sm btn-o pf" onclick="filterProd('reviewing',this)">待审核</button>
+      <button class="btn btn-sm btn-o pf" onclick="filterProd('selling',this)">销售中</button>
+      <button class="btn btn-sm btn-o pf" onclick="filterProd('offline',this)">已下架</button>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="pt">商品列表</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>商品名称</th><th>供应商</th><th>分类</th><th>闪购价</th><th>原价</th><th>库存</th><th>AI信心值</th><th>状态</th><th>操作</th></tr></thead>
+        <tbody id="products-tbody"><!-- JS --></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== 纠纷仲裁 ===== -->
+  <div class="page" id="page-disputes">
+    <div class="alert-card alert-info" style="margin-bottom:16px"><span style="font-size:16px">ℹ️</span><div style="font-size:12px;color:#1D4ED8">纠纷仲裁采用 <strong>AI初审 + 陪审团投票 + 人工复核</strong> 三级机制，确保公平公正</div></div>
+    <div class="panel">
+      <div class="ph"><span class="pt">纠纷仲裁列表</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>纠纷编号</th><th>关联订单</th><th>买家</th><th>供应商</th><th>纠纷原因</th><th>状态</th><th>AI裁决</th><th>发起时间</th><th>操作</th></tr></thead>
+        <tbody id="disputes-tbody"><!-- JS --></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== 结算管理 ===== -->
+  <div class="page" id="page-settlements">
+    <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat-card"><div class="sc-label">今日结算总额</div><div>¥<span class="sc-num">68.4</span><span class="sc-unit">万</span></div><div class="sc-trend up">↑ 较昨日 +9%</div></div>
+      <div class="stat-card"><div class="sc-label">平台佣金收入</div><div>¥<span class="sc-num">3.42</span><span class="sc-unit">万</span></div><div class="sc-trend up">平均佣金率5%</div></div>
+      <div class="stat-card"><div class="sc-label">待结算金额</div><div>¥<span class="sc-num">12.8</span><span class="sc-unit">万</span></div><div class="sc-trend neutral">T+1自动结算</div></div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="pt">结算记录</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>结算单号</th><th>供应商</th><th>关联订单</th><th>结算金额</th><th>佣金</th><th>预留金</th><th>实到</th><th>状态</th><th>结算时间</th></tr></thead>
+        <tbody id="settlements-tbody"><!-- JS --></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== 消费者管理 ===== -->
+  <div class="page" id="page-users">
+    <div class="stats-row" style="grid-template-columns:repeat(4,1fr)">
+      <div class="stat-card"><div class="sc-label">注册用户总数</div><div><span class="sc-num">3,240</span></div><div class="sc-trend up">↑ 今日 +28</div></div>
+      <div class="stat-card"><div class="sc-label">AAA级消费者</div><div><span class="sc-num">126</span></div><div class="sc-trend up">优先抢购特权</div></div>
+      <div class="stat-card"><div class="sc-label">月活用户</div><div><span class="sc-num">1,860</span></div><div class="sc-trend up">↑ 环比 +12%</div></div>
+      <div class="stat-card"><div class="sc-label">人均节省</div><div>¥<span class="sc-num">186</span></div><div class="sc-trend up">购买转化率68%</div></div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="pt">消费者列表</span><input placeholder="搜索手机号/昵称..." style="padding:4px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;width:200px;outline:none"></div>
+      <div class="tw"><table>
+        <thead><tr><th>用户ID</th><th>昵称</th><th>手机号</th><th>信用等级</th><th>累计订单</th><th>累计节省</th><th>注册时间</th><th>操作</th></tr></thead>
+        <tbody id="users-tbody"><!-- JS --></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== 退款管理 ===== -->
+  <div class="page" id="page-refunds">
+    <div class="panel">
+      <div class="ph"><span class="pt">退款申请列表</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>退款单号</th><th>订单号</th><th>买家</th><th>商品</th><th>退款金额</th><th>原因</th><th>供应商</th><th>状态</th><th>申请时间</th><th>操作</th></tr></thead>
+        <tbody id="refunds-tbody"><!-- JS --></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== Banner管理 ===== -->
+  <div class="page" id="page-banners">
+    <div class="panel" style="margin-bottom:18px">
+      <div class="ph"><span class="pt">新增Banner</span></div>
+      <div class="pb">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="fg"><label>Banner标题</label><input placeholder="活动标题"></div>
+          <div class="fg"><label>跳转链接</label><input placeholder="https://..."></div>
+          <div class="fg"><label>图片URL</label><input placeholder="https://cdn.../banner.jpg"></div>
+          <div class="fg"><label>排序</label><input type="number" value="0"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-sm btn-o">取消</button><button class="btn btn-sm btn-p">保存Banner</button></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="pt">Banner列表（对应消费端首页轮播）</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>标题</th><th>图片预览</th><th>跳转链接</th><th>排序</th><th>状态</th><th>操作</th></tr></thead>
+        <tbody id="banners-tbody"><!-- JS --></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== 优惠券管理 ===== -->
+  <div class="page" id="page-coupons">
+    <div class="panel" style="margin-bottom:18px">
+      <div class="ph"><span class="pt">创建优惠券（对应消费端领券中心）</span></div>
+      <div class="pb">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="fg"><label>券名称</label><input placeholder="双旦专属券"></div>
+          <div class="fg"><label>券类型</label><select><option>满减券</option><option>折扣券</option><option>无门槛券</option></select></div>
+          <div class="fg"><label>券面值 (¥)</label><input type="number" placeholder="10"></div>
+          <div class="fg"><label>最低消费 (¥)</label><input type="number" placeholder="50"></div>
+          <div class="fg"><label>发行数量</label><input type="number" placeholder="1000"></div>
+          <div class="fg"><label>过期时间</label><input type="date"></div>
+        </div>
+        <button class="btn btn-sm btn-p" style="margin-top:12px">创建并发布</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="pt">优惠券列表</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>券名称</th><th>类型</th><th>面值</th><th>使用门槛</th><th>已领/总量</th><th>已使用</th><th>有效期</th><th>状态</th><th>操作</th></tr></thead>
+        <tbody id="coupons-tbody"><!-- JS --></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== 通知管理 ===== -->
+  <div class="page" id="page-notifications">
+    <div class="panel" style="margin-bottom:18px">
+      <div class="ph"><span class="pt">发送系统通知（推送至消费端/供应商端）</span></div>
+      <div class="pb">
+        <div class="fg"><label>通知标题</label><input placeholder="平台公告标题"></div>
+        <div class="fg"><label>通知内容</label><textarea placeholder="通知详情内容..." rows="3"></textarea></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="fg"><label>通知类型</label><select><option>系统公告</option><option>订单通知</option><option>活动通知</option><option>风控通知</option></select></div>
+          <div class="fg"><label>发送对象</label><select><option>全部用户</option><option>消费者</option><option>供应商</option><option>指定用户</option></select></div>
+        </div>
+        <button class="btn btn-sm btn-p" style="margin-top:12px">立即推送</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="pt">通知记录</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>标题</th><th>内容</th><th>类型</th><th>发送对象</th><th>发送时间</th></tr></thead>
+        <tbody id="notifications-tbody"><!-- JS --></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== 心搏播报 ===== -->
+  <div class="page" id="page-heartbeat">
+    <div class="alert-card alert-info" style="margin-bottom:16px"><span>ℹ️</span><div style="font-size:12px;color:#1D4ED8">心搏播报滚动显示在消费端首页底部，营造实时交易氛围</div></div>
+    <div class="panel" style="margin-bottom:18px">
+      <div class="ph"><span class="pt">添加心搏播报</span></div>
+      <div class="pb">
+        <div class="fg"><label>播报内容</label><input id="hb-content" placeholder="🎉 刚刚 北京张女士 节省了 ¥128"></div>
+        <button class="btn btn-sm btn-p" style="margin-top:8px">添加播报</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="pt">播报列表（实时滚动于消费端）</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>播报内容</th><th>状态</th><th>创建时间</th><th>操作</th></tr></thead>
+        <tbody id="heartbeat-tbody"><!-- JS --></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== 弹窗管理 ===== -->
+  <div class="page" id="page-popups">
+    <div class="panel" style="margin-bottom:18px">
+      <div class="ph"><span class="pt">新增弹窗（消费端启动弹窗）</span></div>
+      <div class="pb">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="fg"><label>弹窗标题</label><input placeholder="活动标题"></div>
+          <div class="fg"><label>弹窗类型</label><select><option>活动公告</option><option>新人优惠</option><option>限时活动</option></select></div>
+          <div class="fg"><label>图片URL</label><input placeholder="弹窗图片链接"></div>
+          <div class="fg"><label>跳转链接</label><input placeholder="点击跳转地址"></div>
+        </div>
+        <button class="btn btn-sm btn-p" style="margin-top:12px">保存并启用</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="pt">弹窗列表</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>标题</th><th>类型</th><th>状态</th><th>创建时间</th><th>操作</th></tr></thead>
+        <tbody id="popups-tbody"><!-- JS --></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== 信用管理 ===== -->
+  <div class="page" id="page-credits">
+    <div class="two-col">
+      <div class="panel">
+        <div class="ph"><span class="pt">消费者信用分布（六维体系）</span></div>
+        <div class="pb">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>AAA级（优先抢购）</span><span style="font-weight:700;color:var(--success)">126人</span></div><div style="background:#F1F5F9;border-radius:6px;height:8px"><div style="width:45%;height:100%;background:var(--success);border-radius:6px"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>AA级</span><span style="font-weight:700;color:#3B82F6">380人</span></div><div style="background:#F1F5F9;border-radius:6px;height:8px"><div style="width:70%;height:100%;background:#3B82F6;border-radius:6px"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>A级</span><span style="font-weight:700;color:var(--warning)">2,418人</span></div><div style="background:#F1F5F9;border-radius:6px;height:8px"><div style="width:90%;height:100%;background:var(--warning);border-radius:6px"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>B/C级（受限）</span><span style="font-weight:700;color:var(--danger)">316人</span></div><div style="background:#F1F5F9;border-radius:6px;height:8px"><div style="width:20%;height:100%;background:var(--danger);border-radius:6px"></div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><span class="pt">供应商信用分布（五维体系）</span></div>
+        <div class="pb">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>AAA级（免保证金）</span><span style="font-weight:700;color:var(--success)">86家</span></div><div style="background:#F1F5F9;border-radius:6px;height:8px"><div style="width:55%;height:100%;background:var(--success);border-radius:6px"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>AA级</span><span style="font-weight:700;color:#3B82F6">220家</span></div><div style="background:#F1F5F9;border-radius:6px;height:8px"><div style="width:75%;height:100%;background:#3B82F6;border-radius:6px"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>A级</span><span style="font-weight:700;color:var(--warning)">480家</span></div><div style="background:#F1F5F9;border-radius:6px;height:8px"><div style="width:88%;height:100%;background:var(--warning);border-radius:6px"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>B/C/D级（受限）</span><span style="font-weight:700;color:var(--danger)">70家</span></div><div style="background:#F1F5F9;border-radius:6px;height:8px"><div style="width:15%;height:100%;background:var(--danger);border-radius:6px"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 发票管理 ===== -->
+  <div class="page" id="page-invoices">
+    <div class="panel">
+      <div class="ph"><span class="pt">发票申请列表（对应消费端发票功能）</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>发票单号</th><th>订单号</th><th>申请人</th><th>发票类型</th><th>抬头</th><th>税号</th><th>金额</th><th>邮箱</th><th>状态</th><th>操作</th></tr></thead>
+        <tbody id="invoices-tbody"><!-- JS --></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== 积分管理 ===== -->
+  <div class="page" id="page-points">
+    <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat-card"><div class="sc-label">平台积分总流通量</div><div><span class="sc-num">1,248,600</span></div><div class="sc-trend neutral">折合现金价值</div></div>
+      <div class="stat-card"><div class="sc-label">今日积分发放</div><div><span class="sc-num">8,640</span></div><div class="sc-trend up">↑ 购物赠分</div></div>
+      <div class="stat-card"><div class="sc-label">积分抵扣金额</div><div>¥<span class="sc-num">1,286</span></div><div class="sc-trend neutral">100积分=¥1</div></div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="pt">积分记录（与消费端积分中心同步）</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>用户</th><th>变动类型</th><th>积分变动</th><th>当前余额</th><th>关联订单</th><th>时间</th></tr></thead>
+        <tbody id="points-tbody"><!-- JS --></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== 评价管理 ===== -->
+  <div class="page" id="page-reviews">
+    <div class="panel">
+      <div class="ph"><span class="pt">评价列表</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>商品</th><th>供应商</th><th>评分</th><th>评价内容</th><th>买家</th><th>时间</th><th>操作</th></tr></thead>
+        <tbody id="reviews-tbody"><!-- JS --></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== 统计报表 ===== -->
+  <div class="page" id="page-stats">
+    <div class="stats-row">
+      <div class="stat-card"><div class="sc-label">本月GMV</div><div>¥<span class="sc-num">3,640</span><span class="sc-unit">万</span></div><div class="sc-trend up">↑ 同比 +42%</div></div>
+      <div class="stat-card"><div class="sc-label">本月订单</div><div><span class="sc-num">24,680</span></div><div class="sc-trend up">↑ 环比 +18%</div></div>
+      <div class="stat-card"><div class="sc-label">本月新用户</div><div><span class="sc-num">860</span></div><div class="sc-trend up">↑ 较上月 +26%</div></div>
+      <div class="stat-card"><div class="sc-label">本月佣金收入</div><div>¥<span class="sc-num">182</span><span class="sc-unit">万</span></div><div class="sc-trend up">↑ 同比 +38%</div></div>
+    </div>
+    <div class="two-col">
+      <div class="panel"><div class="ph"><span class="pt">月度GMV趋势</span></div><div class="pb"><div class="cp"><div class="cp-icon">📈</div><span>近12个月GMV趋势</span></div></div></div>
+      <div class="panel"><div class="ph"><span class="pt">用户增长曲线</span></div><div class="pb"><div class="cp"><div class="cp-icon">👤</div><span>月度新增用户</span></div></div></div>
+    </div>
+  </div>
+
+  <!-- ===== 员工账号 ===== -->
+  <div class="page" id="page-staff">
+    <div class="panel">
+      <div class="ph"><span class="pt">员工账号管理</span><button class="btn btn-sm btn-p">+ 添加员工</button></div>
+      <div class="tw"><table>
+        <thead><tr><th>姓名</th><th>手机号</th><th>角色</th><th>权限模块</th><th>状态</th><th>最近登录</th><th>操作</th></tr></thead>
+        <tbody id="staff-tbody"><!-- JS --></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ===== 系统配置 ===== -->
+  <div class="page" id="page-sysconfig">
+    <div class="two-col">
+      <div class="panel">
+        <div class="ph"><span class="pt">平台基础配置</span></div>
+        <div class="pb">
+          <div class="fg"><label>平台佣金率 (%)</label><input type="number" value="5"></div>
+          <div class="fg"><label>T+1结算比例 (%)</label><input type="number" value="90"></div>
+          <div class="fg"><label>预留金释放天数</label><input type="number" value="30"></div>
+          <div class="fg"><label>AI上架费用 (¥/品)</label><input type="number" value="5"></div>
+          <div class="fg"><label>最低保证金 (¥)</label><input type="number" value="5000"></div>
+          <button class="btn btn-sm btn-p" style="margin-top:8px">保存配置</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><span class="pt">信用体系阈值</span></div>
+        <div class="pb">
+          <div class="fg"><label>AAA级最低分数</label><input type="number" value="90"></div>
+          <div class="fg"><label>AA级最低分数</label><input type="number" value="80"></div>
+          <div class="fg"><label>A级最低分数</label><input type="number" value="70"></div>
+          <div class="fg"><label>B级最低分数</label><input type="number" value="60"></div>
+          <div class="fg"><label>C级最低分数（限购）</label><input type="number" value="50"></div>
+          <button class="btn btn-sm btn-p" style="margin-top:8px">保存配置</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ===== Mock Data（与消费端小程序 + 供应商端数据结构完全匹配） =====
+const D = {
+  orders:[
+    {order_no:'FT20260714001',buyer:'张**',product:'新疆苹果礼盒5斤',supplier:'优品源',amount:'89.00',status:'paid',pay:'微信支付',created_at:'07-14 10:23'},
+    {order_no:'FT20260714002',buyer:'李**',product:'东北五常大米10kg',supplier:'粮仓直供',amount:'256.00',status:'shipped',pay:'微信支付',created_at:'07-14 09:45'},
+    {order_no:'FT20260714003',buyer:'王**',product:'云南普洱茶饼357g',supplier:'茗茶坊',amount:'268.00',status:'completed',pay:'微信支付',created_at:'07-13 16:30'},
+    {order_no:'FT20260713004',buyer:'赵**',product:'内蒙古牛肉干500g',supplier:'优品源',amount:'258.00',status:'completed',pay:'微信支付',created_at:'07-13 14:12'},
+    {order_no:'FT20260713005',buyer:'钱**',product:'山东章丘大葱3斤',supplier:'绿农直供',amount:'38.00',status:'cancelled',pay:'—',created_at:'07-13 11:05'},
+  ],
+  suppliers:[
+    {name:'优品源旗舰店',contact:'张经理',type:'个体工商户',credit:'AAA',deposit:'¥0(免)',status:'approved',created_at:'2026-03-15'},
+    {name:'粮仓直供',contact:'王老板',type:'企业',credit:'AA',deposit:'¥5,000',status:'approved',created_at:'2026-04-02'},
+    {name:'绿农合作社',contact:'李主任',type:'农业合作社',credit:'A',deposit:'¥3,000',status:'pending',created_at:'2026-07-12'},
+    {name:'茗茶坊',contact:'陈老师',type:'个体工商户',credit:'A',deposit:'¥2,000',status:'pending',created_at:'2026-07-13'},
+  ],
+  products:[
+    {name:'新疆阿克苏苹果礼盒5斤',supplier:'优品源',category:'生鲜',flash_price:'¥89',original:'¥138',stock:200,ai_conf:'98%',status:'selling'},
+    {name:'东北五常大米10kg',supplier:'粮仓直供',category:'粮油',flash_price:'¥128',original:'¥198',stock:150,ai_conf:'97%',status:'selling'},
+    {name:'山东章丘大葱3斤',supplier:'绿农直供',category:'蔬菜',flash_price:'¥38',original:'¥58',stock:500,ai_conf:'91%',status:'reviewing'},
+    {name:'贵州茅台镇酱酒500ml',supplier:'茗茶坊',category:'酒水',flash_price:'¥268',original:'¥398',stock:80,ai_conf:'88%',status:'reviewing'},
+  ],
+  disputes:[
+    {id:'DIS001',order:'FT20260710001',buyer:'王**',supplier:'优品源',reason:'商品与描述不符',status:'ai_reviewing',verdict:'AI分析中…',created:'07-11'},
+    {id:'DIS002',order:'FT20260709002',buyer:'孙**',supplier:'粮仓直供',reason:'物流损坏',status:'jury_voting',verdict:'陪审团投票中',created:'07-10'},
+    {id:'DIS003',order:'FT20260708003',buyer:'周**',supplier:'茗茶坊',reason:'假冒伪劣',status:'resolved',verdict:'退款给消费者',created:'07-09'},
+  ],
+  settlements:[
+    {id:'SET001',supplier:'优品源',order:'FT20260713001',amount:'¥128',commission:'-¥6.40',reserved:'¥12.80',net:'¥108.80',status:'settled',at:'07-14 02:00'},
+    {id:'SET002',supplier:'粮仓直供',order:'FT20260712003',amount:'¥268',commission:'-¥13.40',reserved:'¥26.80',net:'¥227.80',status:'settled',at:'07-13 02:00'},
+    {id:'SET003',supplier:'优品源',order:'FT20260714002',amount:'¥256',commission:'-¥12.80',reserved:'¥25.60',net:'¥217.60',status:'pending',at:'—'},
+  ],
+  users:[
+    {id:'U001',name:'张**',phone:'138****8888',credit:'AAA',orders:28,saved:'¥1,240',reg:'2025-12'},
+    {id:'U002',name:'李**',phone:'139****9999',credit:'AA',orders:16,saved:'¥680',reg:'2026-02'},
+    {id:'U003',name:'王**',phone:'136****6666',credit:'A',orders:8,saved:'¥320',reg:'2026-05'},
+    {id:'U004',name:'赵**',phone:'137****7777',credit:'B',orders:3,saved:'¥86',reg:'2026-07'},
+  ],
+  refunds:[
+    {no:'REF001',order:'FT20260711002',buyer:'刘**',product:'苹果礼盒5斤',amount:'¥89',reason:'商品损坏',supplier:'优品源',status:'pending_review',at:'07-12 09:00'},
+    {no:'REF002',order:'FT20260710003',buyer:'陈**',product:'普洱茶饼',amount:'¥268',reason:'与描述不符',supplier:'茗茶坊',status:'processing',at:'07-11 14:30'},
+  ],
+  banners:[
+    {title:'七夕大促！全场88折',img:'banner1.jpg',link:'#',sort:1,status:'active'},
+    {title:'新人专属券 领¥50',img:'banner2.jpg',link:'#',sort:2,status:'active'},
+    {title:'农产品直供节',img:'banner3.jpg',link:'#',sort:3,status:'inactive'},
+  ],
+  coupons:[
+    {name:'新人专属券',type:'满减',value:'¥10',min:'¥50',claimed:'860/1000',used:'420',expire:'2026-12-31',status:'active'},
+    {name:'双旦满200减30',type:'满减',value:'¥30',min:'¥200',claimed:'1200/2000',used:'980',expire:'2026-01-01',status:'expired'},
+    {name:'闪购5折券',type:'折扣',value:'5折',min:'无门槛',claimed:'320/500',used:'210',expire:'2026-08-31',status:'active'},
+  ],
+  notifications:[
+    {title:'平台升级公告',content:'平台将于7月15日凌晨2-4点进行维护升级',type:'系统',target:'全部',at:'07-14 10:00'},
+    {title:'夏季促销活动开启',content:'全场商品享8折优惠，活动截止7月31日',type:'活动',target:'消费者',at:'07-10 09:00'},
+  ],
+  heartbeats:[
+    {content:'🎉 刚刚 北京张女士 节省了 ¥128',status:'active',at:'07-14 10:23'},
+    {content:'🚀 刚刚 成都李先生 抢到了 原价¥399 闪购¥219',status:'active',at:'07-14 10:15'},
+    {content:'💰 刚刚 上海王先生 节省了 ¥86',status:'active',at:'07-14 10:08'},
+    {content:'⚡ 刚刚 广州赵女士 抢到了 原价¥599 闪购¥299',status:'active',at:'07-14 09:58'},
+  ],
+  popups:[
+    {title:'新人专属大礼包',type:'新人优惠',status:'active',at:'2026-07-01'},
+    {title:'七夕活动通知',type:'限时活动',status:'inactive',at:'2026-07-10'},
+  ],
+  invoices:[
+    {no:'INV001',order:'FT20260712001',user:'王**',type:'增值税普票',title:'个人',tax_no:'—',amount:'¥128',email:'wang@qq.com',status:'processing'},
+    {no:'INV002',order:'FT20260710003',user:'某公司',type:'增值税专票',title:'北京某科技有限公司',tax_no:'91110108MA0...',amount:'¥268',email:'hz@company.com',status:'completed'},
+  ],
+  points:[
+    {user:'张**',type:'购物赠分',delta:'+50',balance:'1,380',order:'FT20260714001',at:'07-14 10:23'},
+    {user:'李**',type:'积分抵扣',delta:'-100',balance:'640',order:'FT20260714002',at:'07-14 09:45'},
+    {user:'王**',type:'签到赠分',delta:'+5',balance:'205',order:'—',at:'07-14 08:00'},
+  ],
+  reviews:[
+    {product:'新疆苹果礼盒',supplier:'优品源',rating:5,content:'非常新鲜甜度高',buyer:'张**',at:'07-13'},
+    {product:'五常大米10kg',supplier:'粮仓直供',rating:5,content:'米粒饱满口感好',buyer:'李**',at:'07-12'},
+    {product:'普洱茶饼',supplier:'茗茶坊',rating:2,content:'和描述不符，茶饼有霉味',buyer:'孙**',at:'07-11'},
+  ],
+  staff:[
+    {name:'超级管理员',phone:'138****0000',role:'超管',perms:'全部权限',status:'active',last:'07-14 10:30'},
+    {name:'运营小王',phone:'139****1111',role:'运营',perms:'Banner/通知/心搏/弹窗',status:'active',last:'07-14 09:00'},
+    {name:'客服小李',phone:'136****2222',role:'客服',perms:'订单/退款/纠纷',status:'active',last:'07-14 08:30'},
+  ],
+};
+
+// ===== Page Titles =====
+const PT = {overview:'数据总览',stats:'统计报表',orders:'订单管理',refunds:'退款管理',disputes:'纠纷仲裁',settlements:'结算管理',products:'商品审核',reviews:'评价管理',users:'消费者管理',suppliers:'供应商审核',credits:'信用管理',banners:'Banner管理',coupons:'优惠券管理',notifications:'通知管理',heartbeat:'心搏播报',popups:'弹窗管理',invoices:'发票管理',points:'积分管理',staff:'员工账号',sysconfig:'系统配置'};
+
+function sp(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const el=document.getElementById('page-'+id);
+  if(el)el.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+id+"'"))n.classList.add('active');
+  });
+  document.getElementById('page-title').textContent=PT[id]||id;
+}
+
+function statusBadge(s){
+  const m={paid:'<span class="badge bi">待发货</span>',shipped:'<span class="badge bo">已发货</span>',completed:'<span class="badge bs">已完成</span>',cancelled:'<span class="badge bm">已取消</span>',pending:'<span class="badge bw">待付款</span>',pending_review:'<span class="badge bw">待审核</span>',processing:'<span class="badge bi">处理中</span>',completed_:'<span class="badge bs">已完成</span>'};
+  return m[s]||`<span class="badge bm">${s}</span>`;
+}
+function supStatusBadge(s){
+  const m={approved:'<span class="badge bs">已通过</span>',pending:'<span class="badge bw">待审核</span>',rejected:'<span class="badge bd">已拒绝</span>',suspended:'<span class="badge bm">已暂停</span>'};
+  return m[s]||s;
+}
+function prodStatusBadge(s){
+  const m={selling:'<span class="badge bs">销售中</span>',reviewing:'<span class="badge bw">待审核</span>',draft:'<span class="badge bm">草稿</span>',offline:'<span class="badge bd">已下架</span>'};
+  return m[s]||s;
+}
+function disStatusBadge(s){
+  const m={ai_reviewing:'<span class="badge bi">AI审核中</span>',jury_voting:'<span class="badge bp">陪审投票</span>',resolved:'<span class="badge bs">已裁决</span>'};
+  return m[s]||s;
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  // Overview recent orders
+  document.getElementById('ov-recent-orders').innerHTML = D.orders.slice(0,4).map(o=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid #F1F5F9">
+      <div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${o.product}</div><div style="font-size:11px;color:var(--muted)">${o.order_no}</div></div>
+      <div style="text-align:right"><div style="font-size:12.5px;font-weight:700;color:var(--primary)">¥${o.amount}</div>${statusBadge(o.status)}</div>
+    </div>`).join('');
+
+  document.getElementById('ov-pending-suppliers').innerHTML = D.suppliers.filter(s=>s.status==='pending').map(s=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid #F1F5F9">
+      <div style="flex:1"><div style="font-size:12.5px;font-weight:600">${s.name}</div><div style="font-size:11px;color:var(--muted)">${s.type} · ${s.contact}</div></div>
+      <div style="display:flex;gap:6px"><button class="btn btn-sm btn-g">通过</button><button class="btn btn-sm btn-o" style="color:var(--danger)">拒绝</button></div>
+    </div>`).join('');
+
+  renderOrders(D.orders);
+  renderSuppliers(D.suppliers);
+  renderProducts(D.products);
+  renderDisputes(D.disputes);
+  renderSettlements(D.settlements);
+  renderUsers(D.users);
+  renderRefunds(D.refunds);
+  renderBanners(D.banners);
+  renderCoupons(D.coupons);
+  renderNotifications(D.notifications);
+  renderHeartbeats(D.heartbeats);
+  renderPopups(D.popups);
+  renderInvoices(D.invoices);
+  renderPoints(D.points);
+  renderReviews(D.reviews);
+  renderStaff(D.staff);
+});
+
+function renderOrders(list){document.getElementById('orders-tbody').innerHTML=list.map(o=>`<tr><td style="font-family:monospace;font-size:11px">${o.order_no}</td><td>${o.buyer}</td><td>${o.product}</td><td>${o.supplier}</td><td style="color:var(--primary);font-weight:700">¥${o.amount}</td><td>${statusBadge(o.status)}</td><td style="font-size:11px">${o.pay}</td><td style="font-size:11px;color:var(--muted)">${o.created_at}</td><td><div style="display:flex;gap:5px"><button class="btn btn-sm btn-o">详情</button></div></td></tr>`).join('');}
+function renderSuppliers(list){document.getElementById('suppliers-tbody').innerHTML=list.map(s=>`<tr><td style="font-weight:600">${s.name}</td><td>${s.contact}</td><td>${s.type}</td><td><span style="font-weight:700;color:var(--primary)">${s.credit}</span></td><td>${s.deposit}</td><td>${supStatusBadge(s.status)}</td><td style="font-size:11px;color:var(--muted)">${s.created_at}</td><td><div style="display:flex;gap:5px">${s.status==='pending'?'<button class="btn btn-sm btn-g">通过</button><button class="btn btn-sm btn-o" style="color:var(--danger)">拒绝</button>':''}<button class="btn btn-sm btn-o">详情</button></div></td></tr>`).join('');}
+function renderProducts(list){document.getElementById('products-tbody').innerHTML=list.map(p=>`<tr><td>${p.name}</td><td>${p.supplier}</td><td>${p.category}</td><td style="color:var(--primary);font-weight:700">${p.flash_price}</td><td style="color:var(--muted);text-decoration:line-through">${p.original}</td><td>${p.stock}</td><td><span style="color:${parseInt(p.ai_conf)>=90?'var(--success)':'var(--warning)'}">${p.ai_conf}</span></td><td>${prodStatusBadge(p.status)}</td><td><div style="display:flex;gap:5px">${p.status==='reviewing'?'<button class="btn btn-sm btn-g">通过</button><button class="btn btn-sm btn-o" style="color:var(--danger)">拒绝</button>':''}<button class="btn btn-sm btn-o">详情</button></div></td></tr>`).join('');}
+function renderDisputes(list){document.getElementById('disputes-tbody').innerHTML=list.map(d=>`<tr><td style="font-family:monospace;font-size:11px">${d.id}</td><td style="font-size:11px">${d.order}</td><td>${d.buyer}</td><td>${d.supplier}</td><td>${d.reason}</td><td>${disStatusBadge(d.status)}</td><td style="font-size:11px;color:var(--muted)">${d.verdict}</td><td style="font-size:11px;color:var(--muted)">${d.created}</td><td><button class="btn btn-sm btn-o">介入</button></td></tr>`).join('');}
+function renderSettlements(list){document.getElementById('settlements-tbody').innerHTML=list.map(s=>`<tr><td style="font-family:monospace;font-size:11px">${s.id}</td><td>${s.supplier}</td><td style="font-size:11px">${s.order}</td><td>${s.amount}</td><td style="color:var(--danger)">${s.commission}</td><td style="color:var(--warning)">${s.reserved}</td><td style="color:var(--success);font-weight:700">${s.net}</td><td>${s.status==='settled'?'<span class="badge bs">已结算</span>':'<span class="badge bw">待结算</span>'}</td><td style="font-size:11px;color:var(--muted)">${s.at}</td></tr>`).join('');}
+function renderUsers(list){document.getElementById('users-tbody').innerHTML=list.map(u=>`<tr><td style="font-family:monospace;font-size:11px">${u.id}</td><td>${u.name}</td><td>${u.phone}</td><td><span style="font-weight:700;color:var(--primary)">${u.credit}</span></td><td>${u.orders}</td><td style="color:var(--success);font-weight:700">${u.saved}</td><td style="font-size:11px;color:var(--muted)">${u.reg}</td><td><button class="btn btn-sm btn-o">详情</button></td></tr>`).join('');}
+function renderRefunds(list){document.getElementById('refunds-tbody').innerHTML=list.map(r=>`<tr><td style="font-family:monospace;font-size:11px">${r.no}</td><td style="font-size:11px">${r.order}</td><td>${r.buyer}</td><td>${r.product}</td><td style="color:var(--danger);font-weight:700">${r.amount}</td><td>${r.reason}</td><td>${r.supplier}</td><td>${statusBadge(r.status)}</td><td style="font-size:11px;color:var(--muted)">${r.at}</td><td><div style="display:flex;gap:5px"><button class="btn btn-sm btn-g">批准</button><button class="btn btn-sm btn-o" style="color:var(--danger)">拒绝</button></div></td></tr>`).join('');}
+function renderBanners(list){document.getElementById('banners-tbody').innerHTML=list.map(b=>`<tr><td style="font-weight:600">${b.title}</td><td><div style="width:60px;height:36px;background:#F1F5F9;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted)">图片</div></td><td style="font-size:11px">${b.link}</td><td>${b.sort}</td><td>${b.status==='active'?'<span class="badge bs">启用</span>':'<span class="badge bm">停用</span>'}</td><td><div style="display:flex;gap:5px"><button class="btn btn-sm btn-o">编辑</button><button class="btn btn-sm btn-o" style="color:var(--danger)">删除</button></div></td></tr>`).join('');}
+function renderCoupons(list){document.getElementById('coupons-tbody').innerHTML=list.map(c=>`<tr><td style="font-weight:600">${c.name}</td><td>${c.type}</td><td style="color:var(--primary);font-weight:700">${c.value}</td><td>${c.min}</td><td>${c.claimed}</td><td>${c.used}</td><td style="font-size:11px;color:var(--muted)">${c.expire}</td><td>${c.status==='active'?'<span class="badge bs">生效中</span>':'<span class="badge bm">已过期</span>'}</td><td><button class="btn btn-sm btn-o">编辑</button></td></tr>`).join('');}
+function renderNotifications(list){document.getElementById('notifications-tbody').innerHTML=list.map(n=>`<tr><td style="font-weight:600">${n.title}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${n.content}</td><td>${n.type}</td><td>${n.target}</td><td style="font-size:11px;color:var(--muted)">${n.at}</td></tr>`).join('');}
+function renderHeartbeats(list){document.getElementById('heartbeat-tbody').innerHTML=list.map(h=>`<tr><td>${h.content}</td><td><span class="badge bs">启用</span></td><td style="font-size:11px;color:var(--muted)">${h.at}</td><td><div style="display:flex;gap:5px"><button class="btn btn-sm btn-o">停用</button><button class="btn btn-sm btn-o" style="color:var(--danger)">删除</button></div></td></tr>`).join('');}
+function renderPopups(list){document.getElementById('popups-tbody').innerHTML=list.map(p=>`<tr><td style="font-weight:600">${p.title}</td><td>${p.type}</td><td>${p.status==='active'?'<span class="badge bs">启用</span>':'<span class="badge bm">停用</span>'}</td><td style="font-size:11px;color:var(--muted)">${p.at}</td><td><div style="display:flex;gap:5px"><button class="btn btn-sm btn-o">编辑</button><button class="btn btn-sm btn-o" style="color:var(--danger)">删除</button></div></td></tr>`).join('');}
+function renderInvoices(list){document.getElementById('invoices-tbody').innerHTML=list.map(v=>`<tr><td style="font-family:monospace;font-size:11px">${v.no}</td><td style="font-size:11px">${v.order}</td><td>${v.user}</td><td>${v.type}</td><td>${v.title}</td><td style="font-size:11px">${v.tax_no}</td><td style="color:var(--primary);font-weight:700">${v.amount}</td><td style="font-size:11px">${v.email}</td><td>${v.status==='completed'?'<span class="badge bs">已开具</span>':'<span class="badge bw">处理中</span>'}</td><td>${v.status==='processing'?'<button class="btn btn-sm btn-p">开具</button>':''}</td></tr>`).join('');}
+function renderPoints(list){document.getElementById('points-tbody').innerHTML=list.map(p=>`<tr><td>${p.user}</td><td>${p.type}</td><td style="font-weight:700;color:${p.delta.startsWith('+')?'var(--success)':'var(--danger)'}">${p.delta}</td><td>${p.balance}</td><td style="font-size:11px;color:var(--muted)">${p.order}</td><td style="font-size:11px;color:var(--muted)">${p.at}</td></tr>`).join('');}
+function renderReviews(list){document.getElementById('reviews-tbody').innerHTML=list.map(r=>`<tr><td>${r.product}</td><td>${r.supplier}</td><td>${'⭐'.repeat(r.rating)}</td><td style="max-width:200px">${r.content}</td><td style="color:var(--muted)">${r.buyer}</td><td style="font-size:11px;color:var(--muted)">${r.at}</td><td>${r.rating<=2?'<button class="btn btn-sm btn-o" style="color:var(--danger)">屏蔽</button>':'<button class="btn btn-sm btn-o">查看</button>'}</td></tr>`).join('');}
+function renderStaff(list){document.getElementById('staff-tbody').innerHTML=list.map(s=>`<tr><td style="font-weight:600">${s.name}</td><td>${s.phone}</td><td>${s.role}</td><td style="font-size:11px;color:var(--muted)">${s.perms}</td><td><span class="badge bs">正常</span></td><td style="font-size:11px;color:var(--muted)">${s.last}</td><td><button class="btn btn-sm btn-o">编辑</button></td></tr>`).join('');}
+
+function filterOrders(status,btn){document.querySelectorAll('.of').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderOrders(status==='all'?D.orders:D.orders.filter(o=>o.status===status));}
+function filterSup(status,btn){document.querySelectorAll('.sf').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderSuppliers(status==='all'?D.suppliers:D.suppliers.filter(s=>s.status===status));}
+function filterProd(status,btn){document.querySelectorAll('.pf').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderProducts(status==='all'?D.products:D.products.filter(p=>p.status===status));}
+
+function logout(){if(confirm('确认退出登录？')){window.location.href='admin-login.html';}}
+</script>
+</body>
+</html>
