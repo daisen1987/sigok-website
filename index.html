@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>闪淘严选 - 好货不贵，比价可见，闪淘无忧</title>
+  <meta name="description" content="闪淘严选是品质快闪交易平台，全网透明比价、双向信用体系、T+1结算，诚邀优质供应商入驻。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ========== 导航栏 ========== -->
+<nav id="navbar">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-icon">⚡</span>
+      <span class="logo-text">闪淘严选</span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#features">平台优势</a></li>
+      <li><a href="#entries">功能入口</a></li>
+      <li><a href="#products">精选商品</a></li>
+      <li><a href="about.html">关于我们</a></li>
+      <li><a href="#contact">联系我们</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="supplier-login.html" class="btn btn-outline">供应商入口</a>
+      <a href="admin-login.html" class="btn btn-accent">管理入口</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="菜单">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ========== Hero ========== -->
+<section class="hero">
+  <div class="hero-bg-shape"></div>
+  <div class="container hero-inner">
+    <div class="hero-content fade-in">
+      <div class="hero-tag">品质快闪交易平台</div>
+      <h1 class="hero-title">好货不贵<br/>比价可见<br/><span class="text-primary">闪淘无忧</span></h1>
+      <p class="hero-sub">让消费重回本质——透明定价、极速回款、双向信用，三方共赢电商新生态</p>
+      <div class="hero-tags">
+        <span class="tag">⚡ 闪团秒杀</span>
+        <span class="tag">📊 透明比价</span>
+        <span class="tag">💰 T+1结算</span>
+        <span class="tag">⭐ 双信用体系</span>
+      </div>
+      <div class="hero-actions">
+        <a href="#entries" class="btn btn-primary btn-lg">进入商城</a>
+        <a href="join.html" class="btn btn-outline btn-lg">供应商入驻</a>
+      </div>
+    </div>
+    <div class="hero-visual fade-in delay-1">
+      <div class="hero-card">
+        <div class="hc-header">
+          <span class="hc-dot red"></span>
+          <span class="hc-dot yellow"></span>
+          <span class="hc-dot green"></span>
+          <span class="hc-title">实时交易看板</span>
+        </div>
+        <div class="hc-stats">
+          <div class="hc-stat"><span class="hc-num" data-target="12580">0</span><span class="hc-label">今日订单</span></div>
+          <div class="hc-stat"><span class="hc-num" data-target="856">0</span><span class="hc-label">入驻供应商</span></div>
+          <div class="hc-stat"><span class="hc-num" data-target="98">0</span><span class="hc-label">满意度 %</span></div>
+        </div>
+        <div class="hc-ticker">
+          <div class="ticker-wrap">
+            <span class="ticker-item">🎉 刚刚 北京张女士 节省了 ¥128</span>
+            <span class="ticker-item">🎉 刚刚 成都李先生 抢到了 原价¥399 闪购¥219</span>
+            <span class="ticker-item">🎉 刚刚 上海王先生 节省了 ¥86</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 数据亮点 ========== -->
+<section class="stats-bar">
+  <div class="container stats-inner">
+    <div class="stat-item fade-in">
+      <span class="stat-num" data-target="3200">0</span>
+      <span class="stat-suffix">+</span>
+      <span class="stat-label">入驻企业供应商</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item fade-in delay-1">
+      <span class="stat-num" data-target="4800">0</span>
+      <span class="stat-suffix">万+</span>
+      <span class="stat-label">累计节省金额</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item fade-in delay-2">
+      <span class="stat-num" data-target="120">0</span>
+      <span class="stat-suffix">万+</span>
+      <span class="stat-label">累计处理订单</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item fade-in delay-3">
+      <span class="stat-num" data-target="98">0</span>
+      <span class="stat-suffix">%</span>
+      <span class="stat-label">用户综合满意度</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 平台核心特色 ========== -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2 class="section-title">平台核心优势</h2>
+      <p class="section-sub">四大差异化机制，构建消费者、供应商、平台三方共赢生态</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card fade-in">
+        <div class="fc-icon" style="background:#FFF3EE;color:#FF6B35">💰</div>
+        <h3>T+1 极速结算</h3>
+        <p>今天卖出，明天到账 90%。供应商无需垫资等待，极速回款降低资金压力，助力中小供应商轻松运营。</p>
+        <ul class="fc-list">
+          <li>隔日自动到账90%</li>
+          <li>预留金30天释放</li>
+          <li>极速回款可付费提前</li>
+        </ul>
+      </div>
+      <div class="feature-card fade-in delay-1">
+        <div class="fc-icon" style="background:#EBF5FB;color:#0D7CBB">🤖</div>
+        <h3>AI 智能上架</h3>
+        <p>60秒完成商品从图片到上架全流程。AI自动抠图、生成卖点文案、核验对标价格、完成六维审核。</p>
+        <ul class="fc-list">
+          <li>仅需填写6项基本信息</li>
+          <li>60秒AI自动审核上架</li>
+          <li>费用5元/品从结算扣除</li>
+        </ul>
+      </div>
+      <div class="feature-card fade-in delay-2">
+        <div class="fc-icon" style="background:#F0FFF4;color:#2E7D32">📊</div>
+        <h3>全网透明比价</h3>
+        <p>商品详情页实时对比京东、淘宝、拼多多价格。AI爬虫核验价格真实性，买贵自动退差，让比价公开透明。</p>
+        <ul class="fc-list">
+          <li>四平台实时比价展示</li>
+          <li>买贵退差价保障</li>
+          <li>AI核验价格真实性</li>
+        </ul>
+      </div>
+      <div class="feature-card fade-in delay-3">
+        <div class="fc-icon" style="background:#FFF8E1;color:#F57F17">⭐</div>
+        <h3>双向信用体系</h3>
+        <p>消费者六维信用评分 + 供应商五维信用评分，双向约束保障平台生态健康，信用越高权益越多。</p>
+        <ul class="fc-list">
+          <li>消费者AAA可优先抢购</li>
+          <li>供应商AAA免保证金</li>
+          <li>AI+陪审团共治仲裁</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 功能入口 ========== -->
+<section class="entries" id="entries">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2 class="section-title">立即开始使用</h2>
+      <p class="section-sub">消费者、供应商、管理方三端入口一目了然</p>
+    </div>
+    <div class="entries-grid">
+      <div class="entry-card consumer fade-in">
+        <div class="ec-badge">消费者端</div>
+        <div class="ec-icon">📱</div>
+        <h3>微信小程序</h3>
+        <p>扫码进入消费者端，浏览限时闪购商品，全网比价后放心下单</p>
+        <div class="qr-placeholder">
+          <div class="qr-box">
+            <span>扫码进入</span>
+            <small>wx4a6a117577c9a9c0</small>
+          </div>
+        </div>
+      </div>
+      <div class="entry-card supplier fade-in delay-1">
+        <div class="ec-badge supplier-badge">供应商端</div>
+        <div class="ec-icon">🏪</div>
+        <h3>供应商管理后台</h3>
+        <p>登录供应商账户，管理商品、订单、结算，查看数据分析</p>
+        <a href="supplier-login.html" class="btn btn-primary entry-btn">立即登录</a>
+        <a href="join.html" class="btn btn-outline entry-btn-sm">新供应商入驻 →</a>
+      </div>
+      <div class="entry-card admin fade-in delay-2">
+        <div class="ec-badge admin-badge">管理方</div>
+        <div class="ec-icon">🛡️</div>
+        <h3>平台管理后台</h3>
+        <p>平台运营人员专属入口，管理供应商、商品审核、纠纷仲裁</p>
+        <a href="admin-login.html" class="btn btn-accent entry-btn">管理员登录</a>
+        <small class="entry-tip">仅限授权管理人员访问</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 精选商品展示 ========== -->
+<section class="products" id="products">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2 class="section-title">精选闪购商品</h2>
+      <p class="section-sub">严选品质，全网最低，买贵退差</p>
+    </div>
+    <div class="products-grid">
+      <div class="product-card fade-in">
+        <div class="pc-img" style="background:linear-gradient(135deg,#f5f7fa,#c3cfe2)">
+          <div class="pc-badge-flash">闪购</div>
+          <div class="pc-stars">⭐⭐⭐⭐⭐</div>
+        </div>
+        <div class="pc-body">
+          <h4>品质护肤精华液</h4>
+          <div class="pc-compare">
+            <span class="compare-label">京东</span><span class="compare-price">¥399</span>
+            <span class="compare-label">拼多多</span><span class="compare-price">¥359</span>
+          </div>
+          <div class="pc-price-row">
+            <span class="flash-price">¥219</span>
+            <span class="origin-price">¥399</span>
+            <span class="save-tag">省¥180</span>
+          </div>
+        </div>
+      </div>
+      <div class="product-card fade-in delay-1">
+        <div class="pc-img" style="background:linear-gradient(135deg,#ffecd2,#fcb69f)">
+          <div class="pc-badge-flash">闪购</div>
+          <div class="pc-stars">⭐⭐⭐⭐⭐</div>
+        </div>
+        <div class="pc-body">
+          <h4>有机大米 5kg</h4>
+          <div class="pc-compare">
+            <span class="compare-label">淘宝</span><span class="compare-price">¥89</span>
+            <span class="compare-label">京东</span><span class="compare-price">¥98</span>
+          </div>
+          <div class="pc-price-row">
+            <span class="flash-price">¥59</span>
+            <span class="origin-price">¥89</span>
+            <span class="save-tag">省¥30</span>
+          </div>
+        </div>
+      </div>
+      <div class="product-card fade-in delay-2">
+        <div class="pc-img" style="background:linear-gradient(135deg,#a8edea,#fed6e3)">
+          <div class="pc-badge-flash">闪购</div>
+          <div class="pc-stars">⭐⭐⭐⭐</div>
+        </div>
+        <div class="pc-body">
+          <h4>无线蓝牙耳机</h4>
+          <div class="pc-compare">
+            <span class="compare-label">京东</span><span class="compare-price">¥299</span>
+            <span class="compare-label">淘宝</span><span class="compare-price">¥279</span>
+          </div>
+          <div class="pc-price-row">
+            <span class="flash-price">¥169</span>
+            <span class="origin-price">¥299</span>
+            <span class="save-tag">省¥130</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="products-cta fade-in">
+      <p>更多商品请扫码进入微信小程序查看</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 入驻引导 ========== -->
+<section class="join-cta">
+  <div class="container join-inner fade-in">
+    <div class="join-content">
+      <h2>诚邀优质供应商入驻</h2>
+      <p>低佣金、快回款、AI助力，让您专注好货，平台负责其余一切</p>
+      <div class="join-features">
+        <div class="jf-item"><span class="jf-icon">✅</span><span>免费入驻</span></div>
+        <div class="jf-item"><span class="jf-icon">✅</span><span>T+1极速回款</span></div>
+        <div class="jf-item"><span class="jf-icon">✅</span><span>AI自动上架</span></div>
+        <div class="jf-item"><span class="jf-icon">✅</span><span>最低3%佣金</span></div>
+      </div>
+      <a href="join.html" class="btn btn-primary btn-lg">立即申请入驻</a>
+    </div>
+    <div class="join-visual">
+      <div class="join-steps">
+        <div class="js-step"><span class="js-num">1</span><span>填写申请表</span></div>
+        <div class="js-arrow">→</div>
+        <div class="js-step"><span class="js-num">2</span><span>AI审核</span></div>
+        <div class="js-arrow">→</div>
+        <div class="js-step"><span class="js-num">3</span><span>5分钟通过</span></div>
+        <div class="js-arrow">→</div>
+        <div class="js-step"><span class="js-num">4</span><span>开始销售</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 合作伙伴 ========== -->
+<section class="partners">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2 class="section-title">合作伙伴</h2>
+    </div>
+    <div class="partners-scroll fade-in">
+      <div class="partners-track">
+        <span class="partner-logo">四川农业合作社</span>
+        <span class="partner-logo">成都供应链协会</span>
+        <span class="partner-logo">西南物流联盟</span>
+        <span class="partner-logo">中国食品安全认证</span>
+        <span class="partner-logo">全国质检中心</span>
+        <span class="partner-logo">四川农业合作社</span>
+        <span class="partner-logo">成都供应链协会</span>
+        <span class="partner-logo">西南物流联盟</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 联系我们 ========== -->
+<section class="contact" id="contact">
+  <div class="container contact-inner">
+    <div class="contact-info fade-in">
+      <div class="section-header" style="text-align:left">
+        <h2 class="section-title">联系我们</h2>
+      </div>
+      <div class="ci-items">
+        <div class="ci-item">
+          <span class="ci-icon">🏢</span>
+          <div><strong>公司名称</strong><p>四川唯领汇供应链管理有限公司</p></div>
+        </div>
+        <div class="ci-item">
+          <span class="ci-icon">📍</span>
+          <div><strong>公司地址</strong><p>四川省成都市</p></div>
+        </div>
+        <div class="ci-item">
+          <span class="ci-icon">🌐</span>
+          <div><strong>官方网站</strong><p>sigok.cn</p></div>
+        </div>
+        <div class="ci-item">
+          <span class="ci-icon">📱</span>
+          <div><strong>小程序AppID</strong><p>wx4a6a117577c9a9c0</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="contact-form fade-in delay-1">
+      <h3>在线留言</h3>
+      <form id="contactForm">
+        <div class="form-group">
+          <label>姓名</label>
+          <input type="text" placeholder="请输入您的姓名" required />
+        </div>
+        <div class="form-group">
+          <label>手机号</label>
+          <input type="tel" placeholder="请输入手机号" required />
+        </div>
+        <div class="form-group">
+          <label>邮箱</label>
+          <input type="email" placeholder="请输入邮箱（选填）" />
+        </div>
+        <div class="form-group">
+          <label>留言内容</label>
+          <textarea rows="4" placeholder="请输入留言内容" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%">提交留言</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 页脚 ========== -->
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text" style="color:#fff">闪淘严选</span>
+      </a>
+      <p>让消费重回本质<br/>品质快闪交易平台</p>
+      <p class="footer-company">四川唯领汇供应链管理有限公司</p>
+    </div>
+    <div class="footer-links">
+      <h4>平台入口</h4>
+      <ul>
+        <li><a href="supplier-login.html">供应商登录</a></li>
+        <li><a href="admin-login.html">管理后台</a></li>
+        <li><a href="join.html">申请入驻</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>关于平台</h4>
+      <ul>
+        <li><a href="about.html">关于我们</a></li>
+        <li><a href="#features">平台优势</a></li>
+        <li><a href="#contact">联系我们</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>法律信息</h4>
+      <ul>
+        <li><a href="#">用户协议</a></li>
+        <li><a href="#">隐私政策</a></li>
+        <li><a href="#">ICP备案号</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 四川唯领汇供应链管理有限公司 版权所有 | sigok.cn</p>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>
