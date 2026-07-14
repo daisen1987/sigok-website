@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>管理后台登录 - 闪淘严选</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div class="auth-page">
+  <!-- 左侧品牌区 -->
+  <div class="auth-brand auth-brand-primary">
+    <div class="auth-brand-logo">
+      <a href="index.html" style="display:flex;align-items:center;gap:10px;">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">闪淘严选</span>
+      </a>
+    </div>
+    <h2>平台管理<br/>控制中心</h2>
+    <p>仅限授权管理人员访问。请使用您的管理员账号和密码登录，所有操作均有日志记录。</p>
+    <div class="auth-brand-features">
+      <div class="abf-item">
+        <div class="abf-icon">📊</div>
+        <span>实时运营数据看板</span>
+      </div>
+      <div class="abf-item">
+        <div class="abf-icon">🛡️</div>
+        <span>供应商审核与纠纷仲裁</span>
+      </div>
+      <div class="abf-item">
+        <div class="abf-icon">👥</div>
+        <span>用户与权限精细化管理</span>
+      </div>
+      <div class="abf-item">
+        <div class="abf-icon">🔒</div>
+        <span>IP 白名单 + 操作审计日志</span>
+      </div>
+    </div>
+    <div class="auth-brand-bg-circle"></div>
+    <div class="auth-brand-bg-circle2"></div>
+  </div>
+
+  <!-- 右侧表单区 -->
+  <div class="auth-form-side">
+    <div class="auth-form-inner">
+      <div class="auth-back">
+        <span>←</span>
+        <a href="index.html">返回首页</a>
+      </div>
+
+      <div class="auth-form">
+        <h3>管理员登录</h3>
+        <p class="subtitle">使用管理员账号和密码登录后台</p>
+
+        <div class="form-stack">
+          <div class="input-group">
+            <input type="text" id="adminUsername" placeholder="管理员账号" autocomplete="username" />
+          </div>
+          <div class="input-group">
+            <input type="password" id="adminPassword" placeholder="登录密码" autocomplete="current-password" />
+          </div>
+          <div class="captcha-row">
+            <div class="input-group" style="flex:1">
+              <input type="text" id="adminCaptcha" placeholder="请输入验证码" maxlength="6" />
+            </div>
+            <div class="captcha-img" id="captchaImg" onclick="refreshCaptcha()" title="点击刷新">
+              <span id="captchaText">A8K3</span>
+            </div>
+          </div>
+          <div class="forgot-row">
+            <div class="agree-row" style="margin:0">
+              <input type="checkbox" id="rememberMe" />
+              <label for="rememberMe" style="font-size:14px;color:#5A6A7A">记住账号</label>
+            </div>
+            <span style="font-size:13px;color:#8A9AB0">忘记密码？请联系超级管理员</span>
+          </div>
+          <button class="auth-submit auth-submit-accent" onclick="handleAdminLogin()">安全登录</button>
+        </div>
+
+        <div id="adminMsg" style="margin-top:16px;font-size:14px;text-align:center;display:none"></div>
+
+        <div style="margin-top:28px;padding:16px;background:#F8FAFB;border-radius:8px;border:1px solid #DDE4ED;">
+          <p style="font-size:13px;color:#8A9AB0;text-align:center;line-height:1.6">
+            🔒 本系统为内部管理平台，所有登录行为均被记录<br/>
+            连续5次登录失败将锁定账号30分钟
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+<script>
+// 简单验证码生成
+const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+let currentCaptcha = 'A8K3';
+
+function refreshCaptcha() {
+  currentCaptcha = Array.from({length: 4}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  document.getElementById('captchaText').textContent = currentCaptcha;
+}
+
+function showAdminMsg(msg, color) {
+  const box = document.getElementById('adminMsg');
+  box.textContent = msg;
+  box.style.color = color || '#EF4444';
+  box.style.display = 'block';
+}
+
+let failCount = 0;
+function handleAdminLogin() {
+  const username = document.getElementById('adminUsername').value.trim();
+  const password = document.getElementById('adminPassword').value;
+  const captcha = document.getElementById('adminCaptcha').value.trim().toUpperCase();
+
+  if (!username || !password) { showAdminMsg('请填写账号和密码'); return; }
+  if (captcha !== currentCaptcha) {
+    showAdminMsg('验证码错误，请重新输入');
+    refreshCaptcha();
+    document.getElementById('adminCaptcha').value = '';
+    return;
+  }
+
+  failCount++;
+  if (failCount >= 5) {
+    showAdminMsg('登录失败次数过多，账号已锁定30分钟');
+    return;
+  }
+
+  // 演示：任意账号密码均可登录
+  if (username && password.length >= 6) {
+    showAdminMsg('登录成功！正在跳转管理后台…', '#22c55e');
+    failCount = 0;
+    setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+  } else {
+    showAdminMsg(`账号或密码错误（剩余 ${5 - failCount} 次尝试机会）`);
+    refreshCaptcha();
+    document.getElementById('adminCaptcha').value = '';
+  }
+}
+
+// 回车登录
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') handleAdminLogin();
+});
+</script>
+</body>
+</html>
