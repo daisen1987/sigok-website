@@ -403,7 +403,7 @@ function handleLogin() {
   if (!phone || !otp) { showMsg('loginMsg', '请填写手机号和验证码'); return; }
   if (otp !== '123456') { showMsg('loginMsg', '验证码错误（演示模式请输入 123456）'); return; }
   showMsg('loginMsg', '✅ 登录成功！正在跳转…', true);
-  setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+  setTimeout(() => { window.location.href = 'supplier-dashboard.html'; }, 1200);
 }
 
 function handleRegister() {
@@ -420,7 +420,7 @@ function handleRegister() {
   if (pwd !== pwd2) { showMsg('registerMsg', '两次密码不一致'); return; }
   if (!agreed) { showMsg('registerMsg', '请勾选同意服务协议'); return; }
   showMsg('registerMsg', '✅ 注册成功！正在跳转…', true);
-  setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+  setTimeout(() => { window.location.href = 'supplier-dashboard.html'; }, 1200);
 }
 </script>
 </body>
