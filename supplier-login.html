@@ -3,121 +3,354 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>供应商登录 - 闪淘严选</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="stylesheet" href="styles.css" />
+  <title>供应商入口 - 闪淘严选</title>
+  <style>
+:root{--primary:#FF6B35;--primary-dark:#E55A25;--primary-light:#FF8C5A;--accent:#0D7CBB;--fg:#1A2332;--border:#DDE4ED;--white:#FFFFFF;--font:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:var(--font)}
+a{text-decoration:none;color:inherit;outline:none}
+button{outline:none;cursor:pointer;border:none;font-family:var(--font)}
+input{font-family:var(--font)}
+
+/* 整体布局 */
+.page{display:flex;min-height:100vh}
+
+/* ===== 左侧品牌区 ===== */
+.brand{flex:0 0 480px;position:relative;overflow:hidden;
+  background:linear-gradient(160deg,#080F1A 0%,#0D1B2A 45%,#0A2540 75%,#0D3060 100%);
+  display:flex;flex-direction:column;justify-content:center;padding:64px 56px}
+/* 网格背景 */
+.brand::before{content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(0,170,255,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,170,255,0.05) 1px,transparent 1px);
+  background-size:40px 40px}
+/* 光晕 */
+.brand::after{content:'';position:absolute;bottom:-120px;right:-120px;width:400px;height:400px;
+  border-radius:50%;background:radial-gradient(circle,rgba(255,107,53,0.12) 0%,transparent 70%)}
+/* 顶部光线 */
+.brand-topline{position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(0,200,255,0.5),rgba(255,107,53,0.4),transparent)}
+.brand-content{position:relative;z-index:1}
+
+/* Logo */
+.brand-logo{display:flex;align-items:center;gap:10px;margin-bottom:56px;text-decoration:none}
+.brand-logo-icon{font-size:28px}
+.brand-logo-text{font-size:22px;font-weight:800;color:#fff;letter-spacing:-0.5px}
+
+/* 标题区 */
+.brand-eyebrow{display:inline-flex;align-items:center;gap:7px;
+  background:rgba(255,107,53,0.12);color:#FF8C5A;
+  padding:6px 14px;border-radius:50px;font-size:12px;font-weight:700;
+  margin-bottom:18px;border:1px solid rgba(255,107,53,0.25);letter-spacing:0.5px}
+.brand-eyebrow-dot{width:6px;height:6px;background:var(--primary);border-radius:50%;
+  animation:glow 1.5s ease infinite}
+.brand-title{font-size:36px;font-weight:900;color:#fff;line-height:1.2;
+  letter-spacing:-0.5px;margin-bottom:14px}
+.brand-title span{color:var(--primary-light)}
+.brand-sub{font-size:15px;color:rgba(255,255,255,0.55);line-height:1.8;
+  margin-bottom:48px;max-width:360px}
+
+/* 特性卡片列表 */
+.brand-features{display:flex;flex-direction:column;gap:14px}
+.bf-item{display:flex;align-items:center;gap:16px;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);
+  border-radius:14px;padding:16px 20px;transition:all 200ms}
+.bf-item:hover{background:rgba(255,255,255,0.07);border-color:rgba(0,200,255,0.15)}
+.bf-icon{width:42px;height:42px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.bf-icon-orange{background:rgba(255,107,53,0.15)}
+.bf-icon-blue{background:rgba(13,124,187,0.15)}
+.bf-icon-green{background:rgba(74,222,128,0.12)}
+.bf-icon-yellow{background:rgba(254,188,46,0.12)}
+.bf-text{}
+.bf-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px}
+.bf-desc{font-size:12px;color:rgba(255,255,255,0.45)}
+
+/* 底部数据条 */
+.brand-stats{display:flex;gap:32px;margin-top:40px;padding-top:32px;
+  border-top:1px solid rgba(255,255,255,0.08)}
+.bs-item{text-align:left}
+.bs-num{font-size:24px;font-weight:900;color:#fff;letter-spacing:-0.5px}
+.bs-num span{font-size:14px;color:var(--primary-light)}
+.bs-label{font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px;letter-spacing:0.3px}
+
+/* ===== 右侧表单区 ===== */
+.form-side{flex:1;background:#F4F7FA;display:flex;align-items:center;justify-content:center;
+  padding:40px 24px;position:relative}
+/* 右侧科技点阵 */
+.form-side::before{content:'';position:absolute;inset:0;
+  background-image:radial-gradient(rgba(13,124,187,0.06) 1px,transparent 1px);
+  background-size:24px 24px;pointer-events:none}
+
+.form-card{background:#fff;border-radius:24px;padding:48px 44px;width:100%;max-width:440px;
+  box-shadow:0 8px 40px rgba(0,0,0,0.08),0 1px 0 rgba(255,255,255,0.9);
+  position:relative;z-index:1;border:1px solid rgba(0,0,0,0.04)}
+
+/* 返回链接 */
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;
+  color:#8A9AB0;margin-bottom:32px;transition:color 200ms}
+.back-link:hover{color:var(--primary)}
+.back-arrow{font-size:16px}
+
+/* Tabs */
+.tabs{display:flex;background:#F0F4F8;border-radius:12px;padding:4px;margin-bottom:32px}
+.tab-btn{flex:1;padding:10px;border-radius:9px;font-size:14px;font-weight:600;
+  color:#6B7A8D;background:transparent;transition:all 200ms;cursor:pointer}
+.tab-btn.active{background:#fff;color:var(--primary);
+  box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+
+/* 表单标题 */
+.form-heading{margin-bottom:6px;font-size:24px;font-weight:800;color:var(--fg);letter-spacing:-0.3px}
+.form-sub{font-size:14px;color:#8A9AB0;margin-bottom:28px;line-height:1.6}
+
+/* 输入组 */
+.input-wrap{margin-bottom:16px}
+.input-label{display:block;font-size:13px;font-weight:600;color:var(--fg);margin-bottom:7px}
+.input-row{display:flex;gap:10px}
+.input-box{display:flex;align-items:center;border:1.5px solid var(--border);border-radius:12px;
+  background:#fff;transition:all 200ms;overflow:hidden}
+.input-box:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(255,107,53,0.1)}
+.input-box input{flex:1;border:none;outline:none;padding:13px 16px;font-size:15px;
+  color:var(--fg);background:transparent}
+.input-box input::placeholder{color:#B0BCC8}
+.input-icon{padding:0 14px 0 0;font-size:18px;color:#B0BCC8}
+.otp-btn{flex-shrink:0;padding:0 18px;height:48px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;border-radius:10px;font-size:13px;font-weight:700;white-space:nowrap;
+  transition:all 200ms;border:none;cursor:pointer}
+.otp-btn:hover{box-shadow:0 4px 16px rgba(255,107,53,0.35)}
+.otp-btn:disabled{opacity:0.6;cursor:not-allowed;box-shadow:none}
+
+/* 协议行 */
+.agree-row{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#6B7A8D;margin-top:4px}
+.agree-row input[type=checkbox]{width:16px;height:16px;margin-top:1px;
+  accent-color:var(--primary);flex-shrink:0;cursor:pointer}
+.agree-row a{color:var(--accent);font-weight:600}
+.agree-row a:hover{text-decoration:underline}
+
+/* 提交按钮 */
+.submit-btn{width:100%;padding:15px;border-radius:14px;margin-top:20px;font-size:16px;font-weight:700;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;
+  box-shadow:0 6px 24px rgba(255,107,53,0.30);transition:all 200ms;cursor:pointer;border:none}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(255,107,53,0.40)}
+.submit-btn:active{transform:translateY(0)}
+
+/* 底部文字 */
+.form-footer-text{text-align:center;margin-top:20px;font-size:13px;color:#8A9AB0}
+.form-footer-text .link-btn{color:var(--primary);font-weight:700;cursor:pointer;background:none;
+  border:none;font-size:13px;padding:0;font-family:var(--font)}
+.form-footer-text .link-btn:hover{text-decoration:underline}
+.apply-link{display:block;text-align:center;margin-top:10px;font-size:13px;
+  color:#B0BCC8;transition:color 200ms}
+.apply-link:hover{color:var(--accent)}
+
+/* 消息框 */
+.msg-box{border-radius:10px;padding:12px 16px;font-size:14px;margin-top:16px;
+  display:none;text-align:center;font-weight:500}
+.msg-error{background:#FEF2F2;color:#DC2626;border:1px solid #FECACA}
+.msg-success{background:#F0FFF4;color:#16A34A;border:1px solid #BBF7D0}
+
+/* 分隔线 */
+.divider{display:flex;align-items:center;gap:14px;margin:24px 0;color:#B0BCC8;font-size:13px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* 安全提示 */
+.security-badge{display:flex;align-items:center;justify-content:center;gap:6px;
+  font-size:12px;color:#B0BCC8;margin-top:24px}
+.security-badge::before{content:'🔒'}
+
+/* 动画 */
+@keyframes glow{0%,100%{opacity:0.5}50%{opacity:1}}
+
+/* 响应式 */
+@media(max-width:900px){
+  .brand{display:none}
+  .form-side{padding:32px 16px}
+}
+  </style>
 </head>
 <body>
 
-<div class="auth-page">
-  <!-- 左侧品牌区 -->
-  <div class="auth-brand auth-brand-accent">
-    <div class="auth-brand-logo">
-      <a href="index.html" style="display:flex;align-items:center;gap:10px;">
-        <span class="logo-icon">⚡</span>
-        <span class="logo-text">闪淘严选</span>
+<div class="page">
+  <!-- ===== 左侧品牌区 ===== -->
+  <div class="brand">
+    <div class="brand-topline"></div>
+    <div class="brand-content">
+      <!-- Logo -->
+      <a href="index.html" class="brand-logo">
+        <span class="brand-logo-icon">⚡</span>
+        <span class="brand-logo-text">闪淘严选</span>
       </a>
+
+      <!-- 标题 -->
+      <div class="brand-eyebrow">
+        <span class="brand-eyebrow-dot"></span>供应商开放平台
+      </div>
+      <h1 class="brand-title">好货直达<br/><span>亿万消费者</span></h1>
+      <p class="brand-sub">加入闪淘严选，享受 T+1 极速结算、AI 60秒智能上架、低佣金运营，构建三方共赢的电商新生态。</p>
+
+      <!-- 特性列表 -->
+      <div class="brand-features">
+        <div class="bf-item">
+          <div class="bf-icon bf-icon-orange">💰</div>
+          <div class="bf-text">
+            <div class="bf-title">T+1 极速结算</div>
+            <div class="bf-desc">今天卖出，明天到账 90%，告别资金压力</div>
+          </div>
+        </div>
+        <div class="bf-item">
+          <div class="bf-icon bf-icon-blue">🤖</div>
+          <div class="bf-text">
+            <div class="bf-title">AI 60秒智能上架</div>
+            <div class="bf-desc">自动抠图、生成文案、核验价格，省时省力</div>
+          </div>
+        </div>
+        <div class="bf-item">
+          <div class="bf-icon bf-icon-green">📊</div>
+          <div class="bf-text">
+            <div class="bf-title">全网透明比价</div>
+            <div class="bf-desc">四平台实时对比，买贵退差价双向保障</div>
+          </div>
+        </div>
+        <div class="bf-item">
+          <div class="bf-icon bf-icon-yellow">⭐</div>
+          <div class="bf-text">
+            <div class="bf-title">AAA 等级免保证金</div>
+            <div class="bf-desc">信用越高权益越多，3% 超低平台佣金</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部数据 -->
+      <div class="brand-stats">
+        <div class="bs-item">
+          <div class="bs-num">3200<span>+</span></div>
+          <div class="bs-label">入驻供应商</div>
+        </div>
+        <div class="bs-item">
+          <div class="bs-num">120<span>万+</span></div>
+          <div class="bs-label">累计处理订单</div>
+        </div>
+        <div class="bs-item">
+          <div class="bs-num">98<span>%</span></div>
+          <div class="bs-label">供应商满意度</div>
+        </div>
+      </div>
     </div>
-    <h2>供应商开放平台</h2>
-    <p>加入闪淘严选，享受 T+1 极速结算、AI 智能上架、低佣金运营，让好货真正触达消费者。</p>
-    <div class="auth-brand-features">
-      <div class="abf-item">
-        <div class="abf-icon">💰</div>
-        <span>T+1 隔日结算，90% 极速到账</span>
-      </div>
-      <div class="abf-item">
-        <div class="abf-icon">🤖</div>
-        <span>AI 60秒自动上架，省时省力</span>
-      </div>
-      <div class="abf-item">
-        <div class="abf-icon">📊</div>
-        <span>全网透明比价，买贵退差保障</span>
-      </div>
-      <div class="abf-item">
-        <div class="abf-icon">⭐</div>
-        <span>AAA 等级免保证金，3% 超低佣金</span>
-      </div>
-    </div>
-    <div class="auth-brand-bg-circle"></div>
-    <div class="auth-brand-bg-circle2"></div>
   </div>
 
-  <!-- 右侧表单区 -->
-  <div class="auth-form-side">
-    <div class="auth-form-inner">
-      <div class="auth-back">
-        <span>←</span>
-        <a href="index.html">返回首页</a>
-      </div>
+  <!-- ===== 右侧表单区 ===== -->
+  <div class="form-side">
+    <div class="form-card">
+      <a href="index.html" class="back-link">
+        <span class="back-arrow">←</span>返回首页
+      </a>
 
       <!-- Tab 切换 -->
-      <div class="auth-tabs">
-        <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">供应商登录</button>
-        <button class="auth-tab" id="tabRegister" onclick="switchTab('register')">新供应商注册</button>
+      <div class="tabs">
+        <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">供应商登录</button>
+        <button class="tab-btn" id="tabRegister" onclick="switchTab('register')">新供应商注册</button>
       </div>
 
       <!-- 登录表单 -->
-      <div id="loginForm" class="auth-form">
-        <h3>欢迎回来</h3>
-        <p class="subtitle">使用手机号验证码快速登录</p>
-        <div class="form-stack">
-          <div class="input-group input-with-btn">
-            <input type="tel" id="loginPhone" placeholder="请输入手机号" maxlength="11" />
+      <div id="loginForm">
+        <h2 class="form-heading">欢迎回来 👋</h2>
+        <p class="form-sub">使用手机号验证码快速登录供应商平台</p>
+
+        <div class="input-wrap">
+          <label class="input-label">手机号</label>
+          <div class="input-row">
+            <div class="input-box" style="flex:1">
+              <span class="input-icon">📱</span>
+              <input type="tel" id="loginPhone" placeholder="请输入手机号" maxlength="11" />
+            </div>
             <button class="otp-btn" id="loginOtpBtn" onclick="sendOtp('login')">获取验证码</button>
           </div>
-          <div class="input-group">
-            <input type="text" id="loginOtp" placeholder="请输入验证码" maxlength="6" />
+        </div>
+
+        <div class="input-wrap">
+          <label class="input-label">验证码</label>
+          <div class="input-box">
+            <span class="input-icon">🔑</span>
+            <input type="text" id="loginOtp" placeholder="请输入6位验证码" maxlength="6" />
           </div>
-          <button class="auth-submit auth-submit-accent" onclick="handleLogin()">登录</button>
         </div>
-        <div style="text-align:center;margin-top:20px;">
-          <span style="font-size:14px;color:#8A9AB0">还没有账号？</span>
-          <span class="form-link" onclick="switchTab('register')">立即注册</span>
+
+        <button class="submit-btn" onclick="handleLogin()">登录供应商平台</button>
+
+        <div class="msg-box" id="loginMsg"></div>
+
+        <div class="form-footer-text">
+          还没有账号？<button class="link-btn" onclick="switchTab('register')">立即免费注册</button>
         </div>
-        <div style="text-align:center;margin-top:8px;">
-          <a href="join.html" style="font-size:13px;color:#8A9AB0;">申请入驻 →</a>
-        </div>
+        <a href="join.html" class="apply-link">还未入驻？申请成为供应商 →</a>
+        <div class="security-badge">账号信息加密传输，安全有保障</div>
       </div>
 
       <!-- 注册表单 -->
-      <div id="registerForm" class="auth-form" style="display:none">
-        <h3>注册供应商账号</h3>
-        <p class="subtitle">填写信息，即刻开启销售之旅</p>
-        <div class="form-stack">
-          <div class="input-group">
-            <input type="text" id="regShopName" placeholder="店铺名称（例：张记农产品旗舰店）" />
+      <div id="registerForm" style="display:none">
+        <h2 class="form-heading">注册供应商账号</h2>
+        <p class="form-sub">填写基本信息，即刻开启您的销售之旅</p>
+
+        <div class="input-wrap">
+          <label class="input-label">店铺名称</label>
+          <div class="input-box">
+            <span class="input-icon">🏪</span>
+            <input type="text" id="regShopName" placeholder="例：张记农产品旗舰店" />
           </div>
-          <div class="input-group input-with-btn">
-            <input type="tel" id="regPhone" placeholder="联系人手机号" maxlength="11" />
+        </div>
+
+        <div class="input-wrap">
+          <label class="input-label">手机号</label>
+          <div class="input-row">
+            <div class="input-box" style="flex:1">
+              <span class="input-icon">📱</span>
+              <input type="tel" id="regPhone" placeholder="联系人手机号" maxlength="11" />
+            </div>
             <button class="otp-btn" id="regOtpBtn" onclick="sendOtp('register')">获取验证码</button>
           </div>
-          <div class="input-group">
-            <input type="text" id="regOtp" placeholder="请输入验证码" maxlength="6" />
-          </div>
-          <div class="input-group">
-            <input type="password" id="regPwd" placeholder="设置密码（8位以上）" />
-          </div>
-          <div class="input-group">
-            <input type="password" id="regPwd2" placeholder="确认密码" />
-          </div>
-          <div class="agree-row">
-            <input type="checkbox" id="regAgree" />
-            <label for="regAgree">我已阅读并同意 <a href="#">《供应商服务协议》</a> 和 <a href="#">《隐私政策》</a></label>
-          </div>
-          <button class="auth-submit auth-submit-accent" onclick="handleRegister()">注册并登录</button>
         </div>
-        <div style="text-align:center;margin-top:20px;">
-          <span style="font-size:14px;color:#8A9AB0">已有账号？</span>
-          <span class="form-link" onclick="switchTab('login')">直接登录</span>
-        </div>
-      </div>
 
-      <div id="msgBox" style="margin-top:16px;font-size:14px;text-align:center;color:#EF4444;display:none"></div>
+        <div class="input-wrap">
+          <label class="input-label">验证码</label>
+          <div class="input-box">
+            <span class="input-icon">🔑</span>
+            <input type="text" id="regOtp" placeholder="请输入6位验证码" maxlength="6" />
+          </div>
+        </div>
+
+        <div class="input-wrap">
+          <label class="input-label">设置密码</label>
+          <div class="input-box">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="regPwd" placeholder="至少8位，包含字母和数字" />
+          </div>
+        </div>
+
+        <div class="input-wrap">
+          <label class="input-label">确认密码</label>
+          <div class="input-box">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="regPwd2" placeholder="再次输入密码" />
+          </div>
+        </div>
+
+        <div class="agree-row">
+          <input type="checkbox" id="regAgree" />
+          <label for="regAgree">我已阅读并同意 <a href="#">《供应商服务协议》</a> 和 <a href="#">《隐私政策》</a></label>
+        </div>
+
+        <button class="submit-btn" onclick="handleRegister()">注册并进入平台</button>
+
+        <div class="msg-box" id="registerMsg"></div>
+
+        <div class="form-footer-text">
+          已有账号？<button class="link-btn" onclick="switchTab('login')">直接登录</button>
+        </div>
+        <div class="security-badge">注册信息安全加密，请放心填写</div>
+      </div>
     </div>
   </div>
 </div>
 
-<script src="main.js"></script>
 <script>
 function switchTab(tab) {
   const isLogin = tab === 'login';
@@ -125,13 +358,12 @@ function switchTab(tab) {
   document.getElementById('tabRegister').classList.toggle('active', !isLogin);
   document.getElementById('loginForm').style.display = isLogin ? '' : 'none';
   document.getElementById('registerForm').style.display = isLogin ? 'none' : '';
-  document.getElementById('msgBox').style.display = 'none';
 }
 
-function showMsg(msg, color) {
-  const box = document.getElementById('msgBox');
+function showMsg(id, msg, isSuccess) {
+  const box = document.getElementById(id);
   box.textContent = msg;
-  box.style.color = color || '#EF4444';
+  box.className = 'msg-box ' + (isSuccess ? 'msg-success' : 'msg-error');
   box.style.display = 'block';
 }
 
@@ -155,21 +387,22 @@ function startCountdown(btnId) {
 function sendOtp(type) {
   const phoneId = type === 'login' ? 'loginPhone' : 'regPhone';
   const btnId = type === 'login' ? 'loginOtpBtn' : 'regOtpBtn';
+  const msgId = type === 'login' ? 'loginMsg' : 'registerMsg';
   const phone = document.getElementById(phoneId).value.trim();
   if (!/^1[3-9]\d{9}$/.test(phone)) {
-    showMsg('请输入正确的手机号');
+    showMsg(msgId, '请输入正确的手机号');
     return;
   }
-  showMsg('验证码已发送（演示模式：请输入 123456）', '#22c55e');
+  showMsg(msgId, '✅ 验证码已发送（演示模式请输入 123456）', true);
   startCountdown(btnId);
 }
 
 function handleLogin() {
   const phone = document.getElementById('loginPhone').value.trim();
   const otp = document.getElementById('loginOtp').value.trim();
-  if (!phone || !otp) { showMsg('请填写手机号和验证码'); return; }
-  if (otp !== '123456') { showMsg('验证码错误（演示模式请输入 123456）'); return; }
-  showMsg('登录成功！正在跳转…', '#22c55e');
+  if (!phone || !otp) { showMsg('loginMsg', '请填写手机号和验证码'); return; }
+  if (otp !== '123456') { showMsg('loginMsg', '验证码错误（演示模式请输入 123456）'); return; }
+  showMsg('loginMsg', '✅ 登录成功！正在跳转…', true);
   setTimeout(() => { window.location.href = 'index.html'; }, 1200);
 }
 
@@ -180,13 +413,13 @@ function handleRegister() {
   const pwd = document.getElementById('regPwd').value;
   const pwd2 = document.getElementById('regPwd2').value;
   const agreed = document.getElementById('regAgree').checked;
-  if (!shop) { showMsg('请填写店铺名称'); return; }
-  if (!/^1[3-9]\d{9}$/.test(phone)) { showMsg('请输入正确的手机号'); return; }
-  if (otp !== '123456') { showMsg('验证码错误（演示模式请输入 123456）'); return; }
-  if (pwd.length < 8) { showMsg('密码至少8位'); return; }
-  if (pwd !== pwd2) { showMsg('两次密码不一致'); return; }
-  if (!agreed) { showMsg('请勾选同意服务协议'); return; }
-  showMsg('注册成功！正在跳转…', '#22c55e');
+  if (!shop) { showMsg('registerMsg', '请填写店铺名称'); return; }
+  if (!/^1[3-9]\d{9}$/.test(phone)) { showMsg('registerMsg', '请输入正确的手机号'); return; }
+  if (otp !== '123456') { showMsg('registerMsg', '验证码错误（演示模式请输入 123456）'); return; }
+  if (pwd.length < 8) { showMsg('registerMsg', '密码至少8位'); return; }
+  if (pwd !== pwd2) { showMsg('registerMsg', '两次密码不一致'); return; }
+  if (!agreed) { showMsg('registerMsg', '请勾选同意服务协议'); return; }
+  showMsg('registerMsg', '✅ 注册成功！正在跳转…', true);
   setTimeout(() => { window.location.href = 'index.html'; }, 1200);
 }
 </script>
