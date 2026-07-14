@@ -538,71 +538,125 @@ tr:hover td{background:#FAFBFC}
 
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
-// ===== Mock Data (与消费端小程序数据结构完全一致) =====
-const MOCK = {
-  supplier: {shop_name:'优品源旗舰店',contact_name:'张经理',credit_score:88,credit_level:'AAA',commission_rate:5,guarantee_stars:5,deposit:0,status:'approved'},
-  stats: {today_orders:42,today_gmv:'3,860',pending_ship:8,month_settle:'28,460'},
-  settlements: {month_settled:'24,680',reserved:'3,780',available:'8,240'},
-  orders:[
-    {order_no:'FT20260714001',product_name:'新疆阿克苏苹果礼盒5斤',buyer:'张**',total_amount:89,quantity:1,status:'paid',created_at:'2026-07-14 10:23'},
-    {order_no:'FT20260714002',product_name:'东北五常大米10kg',buyer:'李**',total_amount:128,quantity:2,status:'shipped',created_at:'2026-07-14 09:45'},
-    {order_no:'FT20260714003',product_name:'云南普洱茶饼357g',buyer:'王**',total_amount:268,quantity:1,status:'completed',created_at:'2026-07-13 16:30'},
-    {order_no:'FT20260713004',product_name:'内蒙古牛肉干500g',buyer:'赵**',total_amount:86,quantity:3,status:'completed',created_at:'2026-07-13 14:12'},
-    {order_no:'FT20260713005',product_name:'山东章丘大葱3斤',buyer:'钱**',total_amount:38,quantity:1,status:'cancelled',created_at:'2026-07-13 11:05'},
-  ],
-  products:[
-    {name:'新疆阿克苏苹果礼盒5斤',flash_price:89,original_price:138,stock:200,sold:856,status:'selling',guarantee_stars:5},
-    {name:'东北五常大米10kg',flash_price:128,original_price:198,stock:150,sold:432,status:'selling',guarantee_stars:5},
-    {name:'云南普洱茶饼357g',flash_price:268,original_price:399,stock:80,sold:203,status:'selling',guarantee_stars:4},
-    {name:'内蒙古牛肉干500g',flash_price:86,original_price:128,stock:300,sold:178,status:'selling',guarantee_stars:4},
-    {name:'山东章丘大葱3斤',flash_price:38,original_price:58,stock:500,sold:92,status:'reviewing',guarantee_stars:0},
-    {name:'广西百色芒果5斤',flash_price:58,original_price:88,stock:0,sold:340,status:'offline',guarantee_stars:3},
-  ],
-  settlement_records:[
-    {id:'SET001',order_no:'FT20260713001',amount:'128.00',commission:'6.40',reserved:'12.80',net:'108.80',status:'settled',settled_at:'2026-07-14 02:00'},
-    {id:'SET002',order_no:'FT20260712003',amount:'268.00',commission:'13.40',reserved:'26.80',net:'227.80',status:'settled',settled_at:'2026-07-13 02:00'},
-    {id:'SET003',order_no:'FT20260714002',amount:'256.00',commission:'12.80',reserved:'25.60',net:'217.60',status:'pending',settled_at:'—'},
-  ],
-  withdrawals:[
-    {amount:'5,000',bank:'招商银行',status:'completed',created_at:'2026-07-10'},
-    {amount:'3,000',bank:'工商银行',status:'pending',created_at:'2026-07-14'},
-  ],
-  refunds:[
-    {refund_no:'REF001',order_no:'FT20260711002',product_name:'苹果礼盒5斤',amount:'89.00',reason:'商品损坏',status:'pending_review',created_at:'2026-07-12 09:00'},
-  ],
-  disputes:[
-    {id:'DIS001',order_no:'FT20260710001',reason:'商品与描述不符',status:'ai_reviewing',ai_verdict:'AI正在审核中',created_at:'2026-07-11'},
-  ],
-  reviews:[
-    {product_name:'新疆苹果礼盒',rating:5,content:'非常新鲜，甜度很高，下次还买！',buyer:'买家***',created_at:'2026-07-13'},
-    {product_name:'五常大米10kg',rating:5,content:'米粒饱满，口感软糯，家人都喜欢',buyer:'买家***',created_at:'2026-07-12'},
-    {product_name:'普洱茶饼',rating:4,content:'茶香浓郁，性价比不错',buyer:'买家***',created_at:'2026-07-11'},
-  ],
-  staff:[
-    {name:'张经理',phone:'138****8888',role:'管理员',permissions:['所有权限'],status:'active',last_login:'2026-07-14 10:30'},
-    {name:'李客服',phone:'139****9999',role:'客服',permissions:['订单查看','退款处理'],status:'active',last_login:'2026-07-14 09:15'},
-  ],
-};
+// ===== Supabase 初始化 =====
+const SURL = 'https://backend.appmiaoda.com/projects/supabase333872604693708800';
+const SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoyMDk5MDI4NjMyLCJpc3MiOiJzdXBhYmFzZSIsInJvbGUiOiJhbm9uIiwic3ViIjoiYW5vbiJ9.L1x5wLfWjfvQatBtNb9Gp_vy3ng8XHbJCgL7lJ8i_8Y';
+const { createClient } = window.supabase;
+const sb = createClient(SURL, SKEY);
 
-// ===== Init =====
-document.addEventListener('DOMContentLoaded',()=>{
-  // Overview stats
-  document.getElementById('ov-today-orders').textContent = MOCK.stats.today_orders;
-  document.getElementById('ov-today-gmv').textContent = MOCK.stats.today_gmv;
-  document.getElementById('ov-pending-ship').textContent = MOCK.stats.pending_ship;
-  document.getElementById('ov-month-settle').textContent = MOCK.stats.month_settle;
-  document.getElementById('s-shop-name').textContent = MOCK.supplier.shop_name;
-  document.getElementById('s-contact-name').textContent = MOCK.supplier.contact_name;
-  // Settlement stats
-  document.getElementById('st-month-settled').textContent = MOCK.settlements.month_settled;
-  document.getElementById('st-reserved').textContent = MOCK.settlements.reserved;
-  document.getElementById('st-available').textContent = MOCK.settlements.available;
-  document.getElementById('wd-available').textContent = MOCK.settlements.available;
-  renderRecentOrders(); renderOrders(MOCK.orders); renderProducts(MOCK.products);
-  renderSettlements(); renderWithdrawals(); renderRefunds(); renderDisputes();
-  renderReviews(); renderStaff(); renderTopProducts();
+let currentSupplier = null;
+let allOrders = [], allProducts = [];
+
+// ===== Auth 检查 & 数据加载 =====
+document.addEventListener('DOMContentLoaded', async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'supplier-login.html'; return; }
+
+  // 获取供应商信息
+  const { data: profile } = await sb.from('profiles').select('role,nickname,phone').eq('id', session.user.id).maybeSingle();
+  if (profile?.role !== 'supplier') { await sb.auth.signOut(); window.location.href = 'supplier-login.html'; return; }
+
+  const { data: supplier } = await sb.from('suppliers').select('*').eq('user_id', session.user.id).maybeSingle();
+  currentSupplier = supplier;
+
+  // 显示供应商信息
+  const shopName = supplier?.shop_name || profile?.nickname || '供应商';
+  const contactName = supplier?.contact_name || profile?.nickname || '—';
+  document.getElementById('s-shop-name').textContent = shopName;
+  document.getElementById('s-contact-name').textContent = contactName;
+  const sidebarName = document.querySelector('.supplier-name');
+  const sidebarLevel = document.querySelector('.supplier-level');
+  if (sidebarName) sidebarName.textContent = shopName;
+  if (sidebarLevel) sidebarLevel.textContent = supplier ? `信用等级 ${supplier.credit_level} · 保证金 ¥${supplier.deposit||0}` : '待审核';
+
+  if (!supplier) { showNoSupplierTip(); return; }
+  await loadAllData(supplier.id);
 });
+
+function showNoSupplierTip() {
+  document.getElementById('ov-today-orders').textContent = '—';
+  document.getElementById('ov-today-gmv').textContent = '—';
+  document.getElementById('ov-pending-ship').textContent = '—';
+  document.getElementById('ov-month-settle').textContent = '—';
+}
+
+async function loadAllData(supplierId) {
+  // 并行加载所有数据
+  const [ordersRes, productsRes, settlementsRes, withdrawalsRes, disputesRes, reviewsRes] = await Promise.all([
+    sb.from('orders').select('*').eq('supplier_id', supplierId).order('created_at', {ascending: false}).limit(200),
+    sb.from('products').select('*').eq('supplier_id', supplierId).order('created_at', {ascending: false}).limit(200),
+    sb.from('settlements').select('*').eq('supplier_id', supplierId).order('created_at', {ascending: false}).limit(100),
+    sb.from('withdrawals').select('*').eq('supplier_id', supplierId).order('created_at', {ascending: false}).limit(50),
+    sb.from('disputes').select('*').eq('supplier_id', supplierId).order('created_at', {ascending: false}).limit(50),
+    sb.from('reviews').select('*,products(name)').eq('products.supplier_id', supplierId).order('created_at', {ascending: false}).limit(50),
+  ]);
+
+  allOrders = Array.isArray(ordersRes.data) ? ordersRes.data : [];
+  allProducts = Array.isArray(productsRes.data) ? productsRes.data : [];
+  const settlements = Array.isArray(settlementsRes.data) ? settlementsRes.data : [];
+  const withdrawals = Array.isArray(withdrawalsRes.data) ? withdrawalsRes.data : [];
+  const disputes = Array.isArray(disputesRes.data) ? disputesRes.data : [];
+  const reviews = Array.isArray(reviewsRes.data) ? reviewsRes.data : [];
+
+  // 计算统计数据
+  const today = new Date().toISOString().slice(0,10);
+  const todayOrders = allOrders.filter(o => o.created_at?.slice(0,10) === today);
+  const todayGMV = todayOrders.reduce((s,o) => s + parseFloat(o.total_amount||0), 0);
+  const pendingShip = allOrders.filter(o => o.status === 'paid').length;
+  const monthStart = new Date(); monthStart.setDate(1);
+  const monthSettled = settlements.filter(s => s.status === 'settled' && new Date(s.settled_at) >= monthStart)
+    .reduce((s,r) => s + parseFloat(r.amount||0) - parseFloat(r.commission||0) - parseFloat(r.reserved_amount||0), 0);
+  const reserved = settlements.filter(s => s.status !== 'settled').reduce((s,r) => s + parseFloat(r.reserved_amount||0), 0);
+  const available = settlements.filter(s => s.status === 'settled').reduce((s,r) => {
+    const net = parseFloat(r.amount||0) - parseFloat(r.commission||0) - parseFloat(r.reserved_amount||0);
+    return s + net;
+  }, 0) - withdrawals.filter(w => w.status === 'completed').reduce((s,w) => s + parseFloat(w.amount||0), 0);
+
+  document.getElementById('ov-today-orders').textContent = todayOrders.length;
+  document.getElementById('ov-today-gmv').textContent = todayGMV.toFixed(0);
+  document.getElementById('ov-pending-ship').textContent = pendingShip;
+  document.getElementById('ov-month-settle').textContent = Math.max(0, monthSettled).toFixed(0);
+  document.getElementById('st-month-settled').textContent = monthSettled.toFixed(2);
+  document.getElementById('st-reserved').textContent = reserved.toFixed(2);
+  document.getElementById('st-available').textContent = Math.max(0, available).toFixed(2);
+  document.getElementById('wd-available').textContent = Math.max(0, available).toFixed(2);
+
+  // 渲染各模块
+  renderRecentOrders(allOrders);
+  renderTopProducts(allProducts);
+  renderOrders(allOrders);
+  renderProducts(allProducts);
+  renderSettlements(settlements);
+  renderWithdrawals(withdrawals);
+  renderRefunds(allOrders.filter(o => o.refunded_amount > 0 || o.status === 'cancelled'));
+  renderDisputes(disputes);
+  renderReviews(reviews);
+  renderStaff([]);
+}
+
+function renderRecentOrders(orders){
+  const c = document.getElementById('ov-recent-orders');
+  if(!orders.length){c.innerHTML='<div style="padding:24px;text-align:center;color:var(--muted)">暂无订单数据</div>';return;}
+  c.innerHTML = orders.slice(0,4).map(o=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid #F1F5F9">
+      <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${o.product_name||'—'}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${o.order_no}</div></div>
+      <div style="text-align:right"><div style="font-size:13px;font-weight:700;color:var(--primary)">¥${o.total_amount}</div><div style="margin-top:2px">${statusBadge(o.status)}</div></div>
+    </div>`).join('');
+}
+
+function renderTopProducts(products){
+  const c = document.getElementById('ov-top-products');
+  const selling = products.filter(p=>p.status==='selling');
+  if(!selling.length){c.innerHTML='<div style="padding:24px;text-align:center;color:var(--muted)">暂无在售商品</div>';return;}
+  c.innerHTML = selling.slice(0,5).map((p,i)=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid #F1F5F9">
+      <div style="width:22px;height:22px;border-radius:6px;background:${i<3?'var(--primary)':'#E2E8F0'};color:${i<3?'#fff':'var(--muted)'};font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center">${i+1}</div>
+      <div style="flex:1;font-size:13px;font-weight:600">${p.name}</div>
+      <div style="text-align:right"><div style="font-size:13px;color:var(--primary);font-weight:700">¥${p.flash_price}</div><div style="font-size:11px;color:var(--muted)">已售${p.sold||0}</div></div>
+    </div>`).join('');
+}
 
 function renderRecentOrders(){
   const c = document.getElementById('ov-recent-orders');
@@ -633,121 +687,135 @@ function prodStatusBadge(s){
 }
 
 function renderOrders(list){
+  if(!list.length){document.getElementById('orders-tbody').innerHTML='<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--muted)">暂无订单数据</td></tr>';return;}
   document.getElementById('orders-tbody').innerHTML = list.map(o=>`
     <tr>
       <td style="font-family:monospace;font-size:12px">${o.order_no}</td>
-      <td>${o.product_name}</td>
-      <td>${o.buyer}</td>
+      <td>${o.product_name||'—'}</td>
+      <td>买家***</td>
       <td style="font-weight:700;color:var(--primary)">¥${o.total_amount}</td>
-      <td>${o.quantity}</td>
+      <td>${o.quantity||1}</td>
       <td>${statusBadge(o.status)}</td>
-      <td style="font-size:12px;color:var(--muted)">${o.created_at}</td>
+      <td style="font-size:12px;color:var(--muted)">${(o.created_at||'').slice(0,16)}</td>
       <td><div style="display:flex;gap:6px">${o.status==='paid'?'<button class="btn btn-sm btn-primary">发货</button>':''}<button class="btn btn-sm btn-outline">详情</button></div></td>
     </tr>`).join('');
 }
 
 function renderProducts(list){
+  if(!list.length){document.getElementById('products-tbody').innerHTML='<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--muted)">暂无商品数据</td></tr>';return;}
   document.getElementById('products-tbody').innerHTML = list.map(p=>`
     <tr>
       <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</td>
       <td style="color:var(--primary);font-weight:700">¥${p.flash_price}</td>
-      <td style="color:var(--muted);text-decoration:line-through">¥${p.original_price}</td>
-      <td>${p.stock<=0?'<span style="color:var(--danger)">售罄</span>':p.stock}</td>
-      <td>${p.sold}</td>
+      <td style="color:var(--muted);text-decoration:line-through">¥${p.original_price||p.market_price||'—'}</td>
+      <td>${(p.stock||0)<=0?'<span style="color:var(--danger)">售罄</span>':p.stock}</td>
+      <td>${p.sold||0}</td>
       <td>${prodStatusBadge(p.status)}</td>
-      <td>${'⭐'.repeat(p.guarantee_stars)||'—'}</td>
+      <td>${p.guarantee_stars?'⭐'.repeat(p.guarantee_stars):'—'}</td>
       <td><div style="display:flex;gap:6px"><button class="btn btn-sm btn-outline">编辑</button>${p.status==='selling'?'<button class="btn btn-sm btn-outline" style="color:var(--danger)">下架</button>':''}</div></td>
     </tr>`).join('');
 }
 
-function renderSettlements(){
-  document.getElementById('settlements-tbody').innerHTML = MOCK.settlement_records.map(s=>`
-    <tr>
-      <td style="font-family:monospace;font-size:12px">${s.id}</td>
-      <td style="font-size:12px">${s.order_no}</td>
-      <td>¥${s.amount}</td>
-      <td style="color:var(--danger)">-¥${s.commission}</td>
-      <td style="color:var(--warning)">¥${s.reserved}</td>
-      <td style="font-weight:700;color:var(--success)">¥${s.net}</td>
+function renderSettlements(list){
+  if(!list||!list.length){document.getElementById('settlements-tbody').innerHTML='<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--muted)">暂无结算记录</td></tr>';return;}
+  document.getElementById('settlements-tbody').innerHTML = list.map(s=>{
+    const net = (parseFloat(s.amount||0)-parseFloat(s.commission||0)-parseFloat(s.reserved_amount||0)).toFixed(2);
+    return `<tr>
+      <td style="font-family:monospace;font-size:12px">${s.id.slice(0,8)}</td>
+      <td style="font-size:12px">${s.order_no||'—'}</td>
+      <td>¥${parseFloat(s.amount||0).toFixed(2)}</td>
+      <td style="color:var(--danger)">-¥${parseFloat(s.commission||0).toFixed(2)}</td>
+      <td style="color:var(--warning)">¥${parseFloat(s.reserved_amount||0).toFixed(2)}</td>
+      <td style="font-weight:700;color:var(--success)">¥${net}</td>
       <td>${s.status==='settled'?'<span class="badge badge-success">已结算</span>':'<span class="badge badge-warning">待结算</span>'}</td>
-      <td style="font-size:12px;color:var(--muted)">${s.settled_at}</td>
-    </tr>`).join('');
+      <td style="font-size:12px;color:var(--muted)">${s.settled_at?(s.settled_at||'').slice(0,16):'—'}</td>
+    </tr>`;
+  }).join('');
 }
 
-function renderWithdrawals(){
-  document.getElementById('withdrawals-tbody').innerHTML = MOCK.withdrawals.map(w=>`
+function renderWithdrawals(list){
+  if(!list||!list.length){document.getElementById('withdrawals-tbody').innerHTML='<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted)">暂无提现记录</td></tr>';return;}
+  document.getElementById('withdrawals-tbody').innerHTML = list.map(w=>`
     <tr>
-      <td style="font-weight:700">¥${w.amount}</td>
-      <td>${w.bank}</td>
+      <td style="font-weight:700">¥${parseFloat(w.amount||0).toFixed(2)}</td>
+      <td>${w.bank_info?.bank_name||w.bank_info?.name||'—'}</td>
       <td>${w.status==='completed'?'<span class="badge badge-success">已到账</span>':'<span class="badge badge-warning">处理中</span>'}</td>
-      <td style="font-size:12px;color:var(--muted)">${w.created_at}</td>
+      <td style="font-size:12px;color:var(--muted)">${(w.created_at||'').slice(0,10)}</td>
     </tr>`).join('');
 }
 
-function renderRefunds(){
-  document.getElementById('refunds-tbody').innerHTML = MOCK.refunds.map(r=>`
+function renderRefunds(list){
+  if(!list||!list.length){document.getElementById('refunds-tbody').innerHTML='<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--muted)">暂无退款记录</td></tr>';return;}
+  document.getElementById('refunds-tbody').innerHTML = list.map(r=>`
     <tr>
-      <td style="font-family:monospace;font-size:12px">${r.refund_no}</td>
-      <td style="font-size:12px">${r.order_no}</td>
-      <td>${r.product_name}</td>
-      <td style="color:var(--danger);font-weight:700">¥${r.amount}</td>
-      <td>${r.reason}</td>
-      <td><span class="badge badge-warning">待审核</span></td>
-      <td style="font-size:12px;color:var(--muted)">${r.created_at}</td>
-      <td><div style="display:flex;gap:6px"><button class="btn btn-sm btn-primary">同意</button><button class="btn btn-sm btn-outline" style="color:var(--danger)">拒绝</button></div></td>
+      <td style="font-family:monospace;font-size:12px">${(r.id||'').slice(0,8)}</td>
+      <td style="font-size:12px">${r.order_no||'—'}</td>
+      <td>${r.product_name||'—'}</td>
+      <td style="color:var(--danger);font-weight:700">¥${parseFloat(r.refunded_amount||r.total_amount||0).toFixed(2)}</td>
+      <td>${r.remark||'退款申请'}</td>
+      <td><span class="badge badge-warning">处理中</span></td>
+      <td style="font-size:12px;color:var(--muted)">${(r.created_at||'').slice(0,10)}</td>
+      <td><div style="display:flex;gap:6px"><button class="btn btn-sm btn-outline">详情</button></div></td>
     </tr>`).join('');
 }
 
-function renderDisputes(){
-  document.getElementById('disputes-tbody').innerHTML = MOCK.disputes.map(d=>`
+function renderDisputes(list){
+  if(!list||!list.length){document.getElementById('disputes-tbody').innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">暂无纠纷记录</td></tr>';return;}
+  document.getElementById('disputes-tbody').innerHTML = list.map(d=>`
     <tr>
-      <td style="font-family:monospace;font-size:12px">${d.id}</td>
-      <td style="font-size:12px">${d.order_no}</td>
-      <td>${d.reason}</td>
-      <td><span class="badge badge-info">AI审核中</span></td>
-      <td style="font-size:12px;color:var(--muted)">${d.ai_verdict}</td>
-      <td style="font-size:12px;color:var(--muted)">${d.created_at}</td>
+      <td style="font-family:monospace;font-size:12px">${(d.id||'').slice(0,8)}</td>
+      <td style="font-size:12px">${d.order_no||'—'}</td>
+      <td>${d.reason||'—'}</td>
+      <td>${d.status==='resolved'?'<span class="badge badge-success">已裁决</span>':d.status==='jury_voting'?'<span class="badge badge-warning">陪审投票</span>':'<span class="badge badge-info">AI审核中</span>'}</td>
+      <td style="font-size:12px;color:var(--muted)">${d.ai_verdict?.summary||'—'}</td>
+      <td style="font-size:12px;color:var(--muted)">${(d.created_at||'').slice(0,10)}</td>
       <td><button class="btn btn-sm btn-outline">查看详情</button></td>
     </tr>`).join('');
 }
 
-function renderReviews(){
-  document.getElementById('reviews-tbody').innerHTML = MOCK.reviews.map(r=>`
+function renderReviews(list){
+  if(!list||!list.length){document.getElementById('reviews-tbody').innerHTML='<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">暂无评价数据</td></tr>';return;}
+  document.getElementById('reviews-tbody').innerHTML = list.map(r=>`
     <tr>
-      <td>${r.product_name}</td>
-      <td>${'⭐'.repeat(r.rating)}</td>
-      <td style="max-width:240px">${r.content}</td>
-      <td style="color:var(--muted)">${r.buyer}</td>
-      <td style="font-size:12px;color:var(--muted)">${r.created_at}</td>
+      <td>${r.products?.name||'—'}</td>
+      <td>${'⭐'.repeat(r.rating||0)}</td>
+      <td style="max-width:240px">${r.content||'—'}</td>
+      <td style="color:var(--muted)">买家***</td>
+      <td style="font-size:12px;color:var(--muted)">${(r.created_at||'').slice(0,10)}</td>
     </tr>`).join('');
 }
 
-function renderStaff(){
-  document.getElementById('staff-tbody').innerHTML = MOCK.staff.map(s=>`
+function renderStaff(list){
+  document.getElementById('staff-tbody').innerHTML = currentSupplier ? `
     <tr>
-      <td style="font-weight:600">${s.name}</td>
-      <td>${s.phone}</td>
-      <td>${s.role}</td>
-      <td style="font-size:12px;color:var(--muted)">${s.permissions.join('、')}</td>
+      <td style="font-weight:600">${currentSupplier.contact_name||'—'}</td>
+      <td>${currentSupplier.contact_phone||'—'}</td>
+      <td>管理员</td>
+      <td style="font-size:12px;color:var(--muted)">所有权限</td>
       <td><span class="badge badge-success">正常</span></td>
-      <td style="font-size:12px;color:var(--muted)">${s.last_login}</td>
+      <td style="font-size:12px;color:var(--muted)">—</td>
       <td><button class="btn btn-sm btn-outline">编辑</button></td>
-    </tr>`).join('');
+    </tr>` : '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">暂无员工数据</td></tr>';
 }
 
 function filterOrders(status,btn){
   document.querySelectorAll('.order-filter').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  const list = status==='all'?MOCK.orders:MOCK.orders.filter(o=>o.status===status);
+  const list = status==='all'?allOrders:allOrders.filter(o=>o.status===status);
   renderOrders(list);
 }
 function filterProds(status,btn){
   document.querySelectorAll('.prod-filter').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  const list = status==='all'?MOCK.products:MOCK.products.filter(p=>p.status===status);
+  const list = status==='all'?allProducts:allProducts.filter(p=>p.status===status);
   renderProducts(list);
 }
-function exportOrders(){alert('导出功能：将订单数据导出为Excel文件（功能需接入后端API）');}
+function exportOrders(){
+  const rows = [['订单号','商品名称','金额','状态','时间'],...allOrders.map(o=>[o.order_no,o.product_name,o.total_amount,o.status,(o.created_at||'').slice(0,16)])];
+  const csv = rows.map(r=>r.join(',')).join('\n');
+  const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download = '订单导出.csv'; a.click();
+}
 
 // ===== Page Switch =====
 const PAGE_TITLES = {overview:'经营概览',orders:'订单管理',products:'商品列表','product-add':'发布商品',settlements:'结算明细',withdrawals:'提现申请',credit:'信用中心',refunds:'退款管理',disputes:'纠纷仲裁',reviews:'商品评价',staff:'人员管理',analytics:'销售分析',settings:'店铺设置'};
@@ -763,7 +831,7 @@ function switchPage(id){
   document.getElementById('page-title').textContent = PAGE_TITLES[id]||id;
 }
 
-function logout(){if(confirm('确认退出登录？')){window.location.href='supplier-login.html';}}
+function logout(){ sb.auth.signOut().then(()=>{ window.location.href='supplier-login.html'; }); }
 </script>
 </body>
 </html>
