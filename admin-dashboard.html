@@ -184,13 +184,60 @@ tr:hover td{background:#FAFBFC}
     <div style="margin-bottom:18px">
       <div class="alert-card alert-warn"><span style="font-size:16px">⚠️</span><div><div style="font-size:12.5px;font-weight:700;color:#92400E">待处理事项</div><div style="font-size:12px;color:#A16207;margin-top:2px">3件纠纷待仲裁 · 2家供应商待审核 · 4件商品待上架审核</div></div></div>
     </div>
-    <div class="two-col">
-      <div class="panel"><div class="ph"><span class="pt">近7日GMV趋势</span></div><div class="pb"><div class="cp"><div class="cp-icon">📈</div><span>GMV走势图（接入ECharts）</span></div></div></div>
+    <!-- 图表行：GMV趋势 + 订单趋势 -->
+    <div class="two-col" style="margin-bottom:18px">
+      <div class="panel">
+        <div class="ph">
+          <span class="pt">GMV实时统计</span>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-sm btn-o chart-range active" onclick="switchRange('gmv',7,this)">近7日</button>
+            <button class="btn btn-sm btn-o chart-range" onclick="switchRange('gmv',30,this)">近30日</button>
+          </div>
+        </div>
+        <div style="padding:8px 16px 16px"><div id="chart-gmv" style="width:100%;height:220px"></div></div>
+      </div>
+      <div class="panel">
+        <div class="ph">
+          <span class="pt">订单趋势</span>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-sm btn-o chart-range2 active" onclick="switchRange('orders',7,this)">近7日</button>
+            <button class="btn btn-sm btn-o chart-range2" onclick="switchRange('orders',30,this)">近30日</button>
+          </div>
+        </div>
+        <div style="padding:8px 16px 16px"><div id="chart-orders" style="width:100%;height:220px"></div></div>
+      </div>
+    </div>
+    <!-- 快捷统计 + 实时订单 -->
+    <div class="two-col" style="margin-bottom:18px">
+      <div class="panel" style="background:linear-gradient(135deg,#fff 0%,#FFF7F3 100%)">
+        <div class="ph"><span class="pt">今日实时数据</span><span id="ov-refresh-time" style="font-size:11px;color:var(--muted)"></span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 18px">
+          <div style="background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #F1F5F9">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:4px">今日订单数</div>
+            <div id="ov-today-orders" style="font-size:22px;font-weight:800;color:var(--primary)">—</div>
+          </div>
+          <div style="background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #F1F5F9">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:4px">今日GMV</div>
+            <div id="ov-today-gmv" style="font-size:22px;font-weight:800;color:#22C55E">—</div>
+          </div>
+          <div style="background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #F1F5F9">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:4px">今日佣金</div>
+            <div id="ov-today-commission" style="font-size:22px;font-weight:800;color:#F59E0B">—</div>
+          </div>
+          <div style="background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #F1F5F9">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:4px">已完成率</div>
+            <div id="ov-completion-rate" style="font-size:22px;font-weight:800;color:#3B82F6">—</div>
+          </div>
+        </div>
+      </div>
       <div class="panel"><div class="ph"><span class="pt">最新订单动态</span></div><div id="ov-recent-orders" style="padding:0"><!-- JS --></div></div>
     </div>
     <div class="two-col">
       <div class="panel"><div class="ph"><span class="pt">供应商待审核</span><button class="btn btn-sm btn-a" onclick="sp('suppliers')">全部查看</button></div><div id="ov-pending-suppliers" style="padding:0"><!-- JS --></div></div>
-      <div class="panel"><div class="ph"><span class="pt">平台数据分布</span></div><div class="pb"><div class="cp"><div class="cp-icon">🥧</div><span>分类销售占比</span></div></div></div>
+      <div class="panel">
+        <div class="ph"><span class="pt">订单状态分布</span></div>
+        <div style="padding:8px 16px 16px"><div id="chart-status" style="width:100%;height:220px"></div></div>
+      </div>
     </div>
   </div>
 
@@ -539,6 +586,7 @@ tr:hover td{background:#FAFBFC}
 
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 // ===== Supabase 初始化 =====
@@ -657,7 +705,114 @@ async function loadDashboardData() {
   renderReviews(reviews);
   renderStaff(staff);
   renderWithdrawals(withdrawals);
+
+  // ===== 图表渲染 =====
+  renderCharts(orders, 7);
+
+  // ===== 今日实时卡片 =====
+  const today = new Date().toISOString().slice(0,10);
+  const todayOrdList = orders.filter(o => o.created_at?.slice(0,10) === today);
+  const todayGMV = todayOrdList.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+parseFloat(o.total_amount||0),0);
+  const todayCommission = todayGMV * 0.05;
+  const completed = orders.filter(o=>o.status==='completed').length;
+  const rate = orders.length ? Math.round(completed/orders.length*100) : 0;
+  document.getElementById('ov-today-orders').textContent = todayOrdList.length;
+  document.getElementById('ov-today-gmv').textContent = '¥'+todayGMV.toFixed(0);
+  document.getElementById('ov-today-commission').textContent = '¥'+todayCommission.toFixed(0);
+  document.getElementById('ov-completion-rate').textContent = rate+'%';
+  const refreshEl = document.getElementById('ov-refresh-time');
+  if (refreshEl) refreshEl.textContent = '更新于 '+new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+
+  // 保存 orders 供图表切换使用
+  window._allOrders = orders;
 }
+
+// ===== ECharts 图表 =====
+let _gmvChart = null, _ordersChart = null, _statusChart = null;
+
+function getDaysRange(days) {
+  const result = [];
+  for (let i = days-1; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate()-i);
+    result.push(d.toISOString().slice(0,10));
+  }
+  return result;
+}
+
+function renderCharts(orders, days) {
+  const dates = getDaysRange(days);
+
+  // 按日聚合
+  const gmvByDay = {}, cntByDay = {};
+  dates.forEach(d => { gmvByDay[d] = 0; cntByDay[d] = 0; });
+  orders.forEach(o => {
+    const d = (o.created_at||'').slice(0,10);
+    if (gmvByDay[d] !== undefined && o.status !== 'cancelled') {
+      gmvByDay[d] += parseFloat(o.total_amount||0);
+      cntByDay[d]++;
+    }
+  });
+
+  const labels = dates.map(d => d.slice(5)); // MM-DD
+  const gmvVals = dates.map(d => parseFloat(gmvByDay[d].toFixed(2)));
+  const cntVals = dates.map(d => cntByDay[d]);
+
+  // GMV 面积图
+  if (!_gmvChart) _gmvChart = echarts.init(document.getElementById('chart-gmv'));
+  _gmvChart.setOption({
+    tooltip: { trigger:'axis', formatter: p => `${p[0].name}<br/>GMV: <b>¥${p[0].value}</b>` },
+    grid: { top:20, right:16, bottom:28, left:52 },
+    xAxis: { type:'category', data:labels, axisLabel:{fontSize:11,color:'#94A3B8'}, axisLine:{show:false}, axisTick:{show:false} },
+    yAxis: { type:'value', axisLabel:{fontSize:11,color:'#94A3B8',formatter:v=>v>=1000?'¥'+(v/1000).toFixed(1)+'k':'¥'+v}, splitLine:{lineStyle:{color:'#F1F5F9'}} },
+    series:[{
+      type:'line', data:gmvVals, smooth:true,
+      symbol:'circle', symbolSize:6,
+      itemStyle:{ color:'#FF6B35' },
+      lineStyle:{ color:'#FF6B35', width:2.5 },
+      areaStyle:{ color:{ type:'linear', x:0,y:0,x2:0,y2:1, colorStops:[{offset:0,color:'rgba(255,107,53,0.25)'},{offset:1,color:'rgba(255,107,53,0)'}] } }
+    }]
+  });
+
+  // 订单趋势折线图
+  if (!_ordersChart) _ordersChart = echarts.init(document.getElementById('chart-orders'));
+  _ordersChart.setOption({
+    tooltip: { trigger:'axis', formatter: p => `${p[0].name}<br/>订单数: <b>${p[0].value}</b>` },
+    grid: { top:20, right:16, bottom:28, left:40 },
+    xAxis: { type:'category', data:labels, axisLabel:{fontSize:11,color:'#94A3B8'}, axisLine:{show:false}, axisTick:{show:false} },
+    yAxis: { type:'value', minInterval:1, axisLabel:{fontSize:11,color:'#94A3B8'}, splitLine:{lineStyle:{color:'#F1F5F9'}} },
+    series:[{
+      type:'bar', data:cntVals,
+      barMaxWidth:28,
+      itemStyle:{ color:{ type:'linear',x:0,y:0,x2:0,y2:1, colorStops:[{offset:0,color:'#3B82F6'},{offset:1,color:'#93C5FD'}] }, borderRadius:[5,5,0,0] },
+      emphasis:{ itemStyle:{ color:'#1D4ED8' } }
+    },{
+      type:'line', data:cntVals, smooth:true,
+      symbol:'circle', symbolSize:5,
+      lineStyle:{ color:'#6366F1', width:2, type:'dashed' },
+      itemStyle:{ color:'#6366F1' }
+    }]
+  });
+
+  // 订单状态饼图
+  const statusMap = {pending:'待付款',paid:'待发货',shipped:'已发货',completed:'已完成',cancelled:'已取消'};
+  const statusColors = {pending:'#F59E0B',paid:'#3B82F6',shipped:'#8B5CF6',completed:'#22C55E',cancelled:'#94A3B8'};
+  const statusCount = {};
+  orders.forEach(o => { statusCount[o.status] = (statusCount[o.status]||0)+1; });
+  const pieData = Object.keys(statusCount).map(k => ({
+    name: statusMap[k]||k, value: statusCount[k],
+    itemStyle:{ color: statusColors[k]||'#CBD5E1' }
+  }));
+
+  if (!_statusChart) _statusChart = echarts.init(document.getElementById('chart-status'));
+  _statusChart.setOption({
+    tooltip: { trigger:'item', formatter:'{b}: {c} ({d}%)' },
+    legend: { orient:'vertical', right:10, top:'center', textStyle:{fontSize:11,color:'#475569'} },
+    series:[{
+      type:'pie', radius:['40%','72%'], center:['38%','50%'],
+      data:pieData.length ? pieData : [{name:'暂无数据',value:1,itemStyle:{color:'#E2E8F0'}}],
+      label:{show:false}, emphasis:{label:{show:true,fontSize:12,fontWeight:'bold'}}
+    }]
+  });
 
 // ===== 供应商审核操作 =====
 async function approveSupplier(id) {
@@ -827,6 +982,28 @@ function disStatusBadge(s){
   const m={ai_reviewing:'<span class="badge bi">AI审核中</span>',jury_voting:'<span class="badge bp">陪审投票</span>',resolved:'<span class="badge bs">已裁决</span>'};
   return m[s]||s;
 }
+
+// ===== 图表区间切换 =====
+function switchRange(type, days, btn) {
+  const sel = type==='gmv' ? '.chart-range' : '.chart-range2';
+  document.querySelectorAll(sel).forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const orders = window._allOrders || [];
+  if (type==='gmv') {
+    const dates = getDaysRange(days), gmvByDay = {};
+    dates.forEach(d=>{ gmvByDay[d]=0; });
+    orders.forEach(o=>{ const d=(o.created_at||'').slice(0,10); if(gmvByDay[d]!==undefined&&o.status!=='cancelled') gmvByDay[d]+=parseFloat(o.total_amount||0); });
+    _gmvChart.setOption({ xAxis:{data:dates.map(d=>d.slice(5))}, series:[{data:dates.map(d=>parseFloat(gmvByDay[d].toFixed(2)))}] });
+  } else {
+    const dates = getDaysRange(days), cntByDay = {};
+    dates.forEach(d=>{ cntByDay[d]=0; });
+    orders.forEach(o=>{ const d=(o.created_at||'').slice(0,10); if(cntByDay[d]!==undefined) cntByDay[d]++; });
+    _ordersChart.setOption({ xAxis:{data:dates.map(d=>d.slice(5))}, series:[{data:dates.map(d=>cntByDay[d])},{data:dates.map(d=>cntByDay[d])}] });
+  }
+}
+
+// 响应式 resize
+window.addEventListener('resize', ()=>{ _gmvChart?.resize(); _ordersChart?.resize(); _statusChart?.resize(); });
 
 function logout(){ sb.auth.signOut().then(()=>{ window.location.href='admin-login.html'; }); }
 </script>
