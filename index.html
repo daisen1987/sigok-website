@@ -229,13 +229,94 @@ footer::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;back
 .footer-links ul li a:hover{color:var(--primary)}
 .footer-bottom{border-top:1px solid rgba(255,255,255,0.05);padding:22px 24px;text-align:center}
 .footer-bottom p{font-size:13px;color:rgba(255,255,255,0.2)}
+/* ===== 平台功能详解 sections ===== */
+.platform-detail{padding:100px 0;background:var(--white);position:relative}
+.platform-detail::before{content:'';position:absolute;inset:0;
+  background-image:radial-gradient(rgba(13,124,187,0.04) 1px,transparent 1px);
+  background-size:28px 28px;pointer-events:none}
+.platform-detail-alt{background:#F7FAFD}
+.pd-layout{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;position:relative}
+.pd-layout-reverse{direction:rtl}
+.pd-layout-reverse>*{direction:ltr}
+.pd-features{display:flex;flex-direction:column;gap:24px}
+.pdf-item{display:flex;align-items:flex-start;gap:18px;padding:20px;border-radius:16px;
+  border:1px solid transparent;transition:all 200ms}
+.pdf-item:hover{background:var(--white);border-color:var(--border);box-shadow:var(--shadow-sm)}
+.pdf-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0}
+.pdf-body h4{font-size:16px;font-weight:700;color:var(--fg);margin-bottom:6px;font-family:var(--font-heading)}
+.pdf-body p{font-size:14px;color:#6B7A8D;line-height:1.75}
+/* 消费者端 可视卡片 */
+.pd-card{background:linear-gradient(160deg,#F8FAFB,#EEF4FB);border-radius:24px;
+  padding:36px 32px;border:1px solid var(--border);box-shadow:var(--shadow-md);text-align:center}
+.pdc-header h3{font-family:var(--font-heading);font-size:22px;font-weight:800;margin:10px 0 8px;color:var(--fg)}
+.pdc-eyebrow{display:inline-block;background:rgba(13,124,187,0.08);color:var(--accent);
+  padding:5px 14px;border-radius:50px;font-size:12px;font-weight:700;margin-bottom:10px;
+  border:1px solid rgba(13,124,187,0.15)}
+.pdc-header p{font-size:14px;color:#6B7A8D;line-height:1.7;max-width:280px;margin:0 auto 24px}
+.qr-frame{width:140px;height:140px;margin:0 auto;border-radius:18px;
+  background:linear-gradient(135deg,#080F1A,#0D1B2A);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 32px rgba(0,0,0,0.2)}
+.qr-inner{text-align:center;color:#fff}
+.qr-icon{font-size:36px;margin-bottom:6px}
+.qr-text{display:block;font-size:13px;font-weight:700;color:rgba(255,255,255,0.9)}
+.qr-id{display:block;font-size:10px;color:rgba(255,255,255,0.35);margin-top:4px;word-break:break-all}
+.pdc-badges{display:flex;gap:8px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+.pdc-badge{background:rgba(13,124,187,0.08);color:var(--accent);padding:5px 12px;
+  border-radius:50px;font-size:12px;font-weight:700;border:1px solid rgba(13,124,187,0.12)}
+/* 供应商数据看板 */
+.supplier-metrics{background:linear-gradient(160deg,#080F1A,#0D1B2A);border-radius:20px;
+  padding:28px;border:1px solid rgba(0,200,255,0.15);
+  box-shadow:0 20px 60px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.06)}
+.sm-header{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,0.4);
+  margin-bottom:20px;letter-spacing:0.3px}
+.sm-dot{width:6px;height:6px;background:#4ADE80;border-radius:50%;animation:glow 1.5s ease infinite}
+.sm-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.sm-item{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);
+  border-radius:12px;padding:16px}
+.sm-num{display:block;font-size:22px;font-weight:900;color:#fff;font-family:var(--font-heading);letter-spacing:-0.3px}
+.sm-label{display:block;font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px}
+.sm-trend{display:block;font-size:11px;margin-top:4px;font-weight:600}
+.sm-trend.up{color:#4ADE80}
+.sm-trend:not(.up){color:rgba(255,107,53,0.8)}
+.sm-ai-bar{display:flex;align-items:center;gap:10px;background:rgba(255,107,53,0.08);
+  border:1px solid rgba(255,107,53,0.2);border-radius:10px;padding:10px 14px;
+  font-size:12px;color:rgba(255,200,150,0.8)}
+.sm-ai-icon{font-size:16px}
+/* 技术能力 section */
+.tech-section{padding:100px 0;background:linear-gradient(180deg,#F7FAFD,#EFF4F9);position:relative}
+.tech-section::before{content:'';position:absolute;inset:0;
+  background-image:radial-gradient(rgba(255,107,53,0.03) 1.5px,transparent 1.5px);
+  background-size:30px 30px;pointer-events:none}
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;position:relative}
+.tech-card{background:var(--white);border-radius:18px;padding:32px 26px;
+  border:1px solid var(--border);box-shadow:var(--shadow-sm);transition:all 250ms;position:relative;overflow:hidden}
+.tech-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--accent),var(--primary));opacity:0;transition:opacity 250ms}
+.tech-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg)}
+.tech-card:hover::after{opacity:1}
+.tc-icon{font-size:36px;margin-bottom:16px}
+.tech-card h4{font-family:var(--font-heading);font-size:17px;font-weight:700;margin-bottom:10px;color:var(--fg)}
+.tech-card p{font-size:13px;color:#6B7A8D;line-height:1.75;margin-bottom:14px}
+.tc-tag{display:inline-block;background:linear-gradient(135deg,#EBF5FB,#D5E8F5);
+  color:var(--accent);padding:4px 12px;border-radius:50px;font-size:11px;font-weight:700;
+  border:1px solid rgba(13,124,187,0.15)}
+/* btn-outline 修复 */
+.btn-outline{background:transparent;border-width:2px;border-style:solid;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:12px 28px;border-radius:50px;font-size:15px;font-weight:600;
+  transition:all 200ms;white-space:nowrap;text-decoration:none}
+
 /* Responsive */
-@media(max-width:1024px){.features-grid{grid-template-columns:repeat(2,1fr)}.hero-title{font-size:46px}.hero-inner{gap:40px}}
+@media(max-width:1024px){.features-grid{grid-template-columns:repeat(2,1fr)}.hero-title{font-size:46px}.hero-inner{gap:40px}.tech-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){
   .hero-inner{grid-template-columns:1fr;gap:40px}.hero-visual{display:none}.hero-title{font-size:38px}
   .hero-features{grid-template-columns:1fr 1fr}
   .stats-inner{flex-direction:column}.stat-divider{display:none}
-  .features-grid,.entries-grid,.products-grid{grid-template-columns:1fr}
+  .features-grid,.products-grid,.tech-grid{grid-template-columns:1fr}
+  .pd-layout,.pd-layout-reverse{grid-template-columns:1fr;gap:40px}
+  .pd-layout-reverse{direction:ltr}
   .join-inner{grid-template-columns:1fr;gap:48px}.contact-inner{grid-template-columns:1fr}
   .footer-inner{grid-template-columns:1fr 1fr}.section-title{font-size:28px}
   .nav-links{display:none;flex-direction:column;position:absolute;top:68px;left:0;right:0;background:rgba(8,15,26,0.98);padding:16px 24px;box-shadow:var(--shadow-md);gap:12px;border-top:1px solid rgba(255,255,255,0.06)}
@@ -254,14 +335,14 @@ footer::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;back
     </a>
     <ul class="nav-links" id="navLinks">
       <li><a href="#features">平台优势</a></li>
-      <li><a href="#entries">功能入口</a></li>
-      <li><a href="#products">精选商品</a></li>
+      <li><a href="#consumer">消费者端</a></li>
+      <li><a href="#supplier-detail">供应商端</a></li>
+      <li><a href="#tech">技术能力</a></li>
       <li><a href="about.html">关于我们</a></li>
       <li><a href="#contact">联系我们</a></li>
     </ul>
     <div class="nav-actions">
       <a href="supplier-login.html" class="btn btn-outline-white">供应商入口</a>
-      <a href="admin-login.html" class="btn btn-primary">管理入口</a>
     </div>
     <button class="hamburger" id="hamburger" aria-label="菜单">
       <span></span><span></span><span></span>
@@ -424,111 +505,201 @@ footer::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;back
   </div>
 </section>
 
-<!-- ========== 功能入口 ========== -->
-<section class="entries" id="entries">
+<!-- ========== 消费者端功能详解 ========== -->
+<section class="platform-detail" id="consumer">
   <div class="container">
     <div class="section-header fade-in">
-      <h2 class="section-title">立即开始使用</h2>
-      <p class="section-sub">消费者、供应商、管理方三端入口一目了然</p>
+      <div class="section-eyebrow">消费者端 · 微信小程序</div>
+      <h2 class="section-title">买到好货，<span>看得见的省钱</span></h2>
+      <p class="section-sub">全网实时比价、限时闪购、双向信用，让每一笔消费都值得信赖</p>
     </div>
-    <div class="entries-grid">
-      <div class="entry-card consumer fade-in">
-        <div class="ec-badge">消费者端</div>
-        <div class="ec-icon">📱</div>
-        <h3>微信小程序</h3>
-        <p>扫码进入消费者端，浏览限时闪购商品，全网比价后放心下单</p>
-        <div class="qr-placeholder">
-          <div class="qr-box">
-            <span>扫码进入</span>
-            <small>wx4a6a117577c9a9c0</small>
+    <div class="pd-layout fade-in">
+      <!-- 左侧：手机端特性列表 -->
+      <div class="pd-features">
+        <div class="pdf-item">
+          <div class="pdf-icon" style="background:linear-gradient(135deg,#FFF3EE,#FFE4D5);color:#FF6B35">⚡</div>
+          <div class="pdf-body">
+            <h4>限时闪购 · 极速抢购</h4>
+            <p>平台精选限时特卖商品，AAA 信用用户优先抢购，最低打到三折。每天上午 10 点、晚上 8 点整点开抢。</p>
+          </div>
+        </div>
+        <div class="pdf-item">
+          <div class="pdf-icon" style="background:linear-gradient(135deg,#EBF5FB,#D5E8F5);color:#0D7CBB">📊</div>
+          <div class="pdf-body">
+            <h4>四平台实时比价</h4>
+            <p>商品详情页实时对比京东、淘宝、拼多多、抖音四平台价格，AI 自动核验真实性，买贵自动退差。</p>
+          </div>
+        </div>
+        <div class="pdf-item">
+          <div class="pdf-icon" style="background:linear-gradient(135deg,#F0FFF4,#DCFCE7);color:#16A34A">🧾</div>
+          <div class="pdf-body">
+            <h4>透明订单全程追踪</h4>
+            <p>从下单到收货，每个环节实时推送；签收后 7 天内可发起退货退款，平台独立仲裁纠纷。</p>
+          </div>
+        </div>
+        <div class="pdf-item">
+          <div class="pdf-icon" style="background:linear-gradient(135deg,#FFF8E1,#FEF3C7);color:#D97706">⭐</div>
+          <div class="pdf-body">
+            <h4>六维信用积分体系</h4>
+            <p>消费行为、评价质量、退货率等六维度综合评分。信用等级越高，享受更多专属权益与优先权。</p>
           </div>
         </div>
       </div>
-      <div class="entry-card supplier fade-in delay-1">
-        <div class="ec-badge supplier-badge">供应商端</div>
-        <div class="ec-icon">🏪</div>
-        <h3>供应商管理后台</h3>
-        <p>登录供应商账户，管理商品、订单、结算，查看数据分析</p>
-        <a href="supplier-login.html" class="btn btn-primary entry-btn">立即登录</a>
-        <a href="join.html" class="btn btn-outline entry-btn-sm">新供应商入驻 →</a>
-      </div>
-      <div class="entry-card admin fade-in delay-2">
-        <div class="ec-badge admin-badge">管理方</div>
-        <div class="ec-icon">🛡️</div>
-        <h3>平台管理后台</h3>
-        <p>平台运营人员专属入口，管理供应商、商品审核、纠纷仲裁</p>
-        <a href="admin-login.html" class="btn btn-accent entry-btn">管理员登录</a>
-        <small class="entry-tip">仅限授权管理人员访问</small>
+      <!-- 右侧：小程序入口卡片 -->
+      <div class="pd-visual fade-in delay-1">
+        <div class="pd-card">
+          <div class="pdc-header">
+            <span class="pdc-eyebrow">📱 微信扫码进入</span>
+            <h3>闪淘严选小程序</h3>
+            <p>消费者专属入口，限时闪购、比价购物、售后保障一站搞定</p>
+          </div>
+          <div class="pdc-qr">
+            <div class="qr-frame">
+              <div class="qr-inner">
+                <div class="qr-icon">📱</div>
+                <span class="qr-text">扫码进入</span>
+                <small class="qr-id">wx4a6a117577c9a9c0</small>
+              </div>
+            </div>
+          </div>
+          <div class="pdc-badges">
+            <span class="pdc-badge">⚡ 限时闪购</span>
+            <span class="pdc-badge">📊 全网比价</span>
+            <span class="pdc-badge">🛡️ 正品保障</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ========== 精选商品展示 ========== -->
-<section class="products" id="products">
+<!-- ========== 供应商端功能详解 ========== -->
+<section class="platform-detail platform-detail-alt" id="supplier-detail">
   <div class="container">
     <div class="section-header fade-in">
-      <h2 class="section-title">精选闪购商品</h2>
-      <p class="section-sub">严选品质，全网最低，买贵退差</p>
+      <div class="section-eyebrow">供应商端 · 管理系统</div>
+      <h2 class="section-title">卖好货，<span>结款快</span></h2>
+      <p class="section-sub">AI 智能上架、T+1 极速结算、精细化数据分析，让供应商专注好货本身</p>
     </div>
-    <div class="products-grid">
-      <div class="product-card fade-in">
-        <div class="pc-img" style="background:linear-gradient(135deg,#f5f7fa,#c3cfe2)">
-          <div class="pc-badge-flash">闪购</div>
-          <div class="pc-stars">⭐⭐⭐⭐⭐</div>
-        </div>
-        <div class="pc-body">
-          <h4>品质护肤精华液</h4>
-          <div class="pc-compare">
-            <span class="compare-label">京东</span><span class="compare-price">¥399</span>
-            <span class="compare-label">拼多多</span><span class="compare-price">¥359</span>
+    <div class="pd-layout pd-layout-reverse fade-in">
+      <!-- 左侧：供应商功能卡片 -->
+      <div class="pd-visual fade-in delay-1">
+        <div class="supplier-metrics">
+          <div class="sm-header">
+            <span class="sm-dot"></span>供应商数据看板（示例）
           </div>
-          <div class="pc-price-row">
-            <span class="flash-price">¥219</span>
-            <span class="origin-price">¥399</span>
-            <span class="save-tag">省¥180</span>
+          <div class="sm-grid">
+            <div class="sm-item">
+              <span class="sm-num">¥28,560</span>
+              <span class="sm-label">本月销售额</span>
+              <span class="sm-trend up">↑ 18.2%</span>
+            </div>
+            <div class="sm-item">
+              <span class="sm-num">342</span>
+              <span class="sm-label">本月订单数</span>
+              <span class="sm-trend up">↑ 12%</span>
+            </div>
+            <div class="sm-item">
+              <span class="sm-num">¥25,704</span>
+              <span class="sm-label">待结算金额</span>
+              <span class="sm-trend">T+1到账</span>
+            </div>
+            <div class="sm-item">
+              <span class="sm-num">4.92</span>
+              <span class="sm-label">综合评分</span>
+              <span class="sm-trend up">⭐ 优质供应商</span>
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="product-card fade-in delay-1">
-        <div class="pc-img" style="background:linear-gradient(135deg,#ffecd2,#fcb69f)">
-          <div class="pc-badge-flash">闪购</div>
-          <div class="pc-stars">⭐⭐⭐⭐⭐</div>
-        </div>
-        <div class="pc-body">
-          <h4>有机大米 5kg</h4>
-          <div class="pc-compare">
-            <span class="compare-label">淘宝</span><span class="compare-price">¥89</span>
-            <span class="compare-label">京东</span><span class="compare-price">¥98</span>
-          </div>
-          <div class="pc-price-row">
-            <span class="flash-price">¥59</span>
-            <span class="origin-price">¥89</span>
-            <span class="save-tag">省¥30</span>
+          <div class="sm-ai-bar">
+            <span class="sm-ai-icon">🤖</span>
+            <span>AI 助手：检测到 3 个商品价格偏高，建议调整</span>
           </div>
         </div>
       </div>
-      <div class="product-card fade-in delay-2">
-        <div class="pc-img" style="background:linear-gradient(135deg,#a8edea,#fed6e3)">
-          <div class="pc-badge-flash">闪购</div>
-          <div class="pc-stars">⭐⭐⭐⭐</div>
+      <!-- 右侧：供应商特性 -->
+      <div class="pd-features">
+        <div class="pdf-item">
+          <div class="pdf-icon" style="background:linear-gradient(135deg,#FFF3EE,#FFE4D5);color:#FF6B35">🤖</div>
+          <div class="pdf-body">
+            <h4>AI 60秒智能上架</h4>
+            <p>上传商品图片，填写 6 项基本信息，AI 自动完成抠图、生成卖点文案、核验对标价格、六维审核，全程 60 秒。</p>
+          </div>
         </div>
-        <div class="pc-body">
-          <h4>无线蓝牙耳机</h4>
-          <div class="pc-compare">
-            <span class="compare-label">京东</span><span class="compare-price">¥299</span>
-            <span class="compare-label">淘宝</span><span class="compare-price">¥279</span>
+        <div class="pdf-item">
+          <div class="pdf-icon" style="background:linear-gradient(135deg,#EBF5FB,#D5E8F5);color:#0D7CBB">💰</div>
+          <div class="pdf-body">
+            <h4>T+1 极速结算</h4>
+            <p>今天销售，次日自动到账 90%，预留金 30 天释放，资金周转更灵活，彻底告别月结压款。</p>
           </div>
-          <div class="pc-price-row">
-            <span class="flash-price">¥169</span>
-            <span class="origin-price">¥299</span>
-            <span class="save-tag">省¥130</span>
+        </div>
+        <div class="pdf-item">
+          <div class="pdf-icon" style="background:linear-gradient(135deg,#F0FFF4,#DCFCE7);color:#16A34A">📈</div>
+          <div class="pdf-body">
+            <h4>精细化数据分析</h4>
+            <p>商品销量趋势、竞品价格对比、买家评价分析、退款率追踪，多维度数据助力精准运营决策。</p>
           </div>
+        </div>
+        <div class="pdf-item">
+          <div class="pdf-icon" style="background:linear-gradient(135deg,#FFF8E1,#FEF3C7);color:#D97706">🏅</div>
+          <div class="pdf-body">
+            <h4>五维信用评分体系</h4>
+            <p>商品质量、发货时效、售后响应、价格诚信、平台合规五维度综合评分，AAA 等级免缴保证金。</p>
+          </div>
+        </div>
+        <div style="margin-top:24px">
+          <a href="supplier-login.html" class="btn btn-primary" style="margin-right:12px">供应商登录</a>
+          <a href="join.html" class="btn btn-outline" style="color:#FF6B35;border-color:#FF6B35">申请入驻 →</a>
         </div>
       </div>
     </div>
-    <div class="products-cta fade-in">
-      <p>更多商品请扫码进入微信小程序查看</p>
+  </div>
+</section>
+
+<!-- ========== 平台技术能力 ========== -->
+<section class="tech-section" id="tech">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-eyebrow">技术底座</div>
+      <h2 class="section-title">AI 驱动的<span>智能电商引擎</span></h2>
+      <p class="section-sub">自研 AI 技术栈与平台管理系统，保障三方生态高效、公平、安全运转</p>
+    </div>
+    <div class="tech-grid fade-in">
+      <div class="tech-card">
+        <div class="tc-icon">🤖</div>
+        <h4>AI 商品审核引擎</h4>
+        <p>自动化完成图片识别、卖点提取、价格核验、品质评分六维审核，准确率 99.2%，60 秒完成上架。</p>
+        <div class="tc-tag">自研NLP + 计算机视觉</div>
+      </div>
+      <div class="tech-card">
+        <div class="tc-icon">🕷️</div>
+        <h4>全网比价爬虫系统</h4>
+        <p>实时抓取京东、淘宝、拼多多、抖音四平台价格，AI 过滤虚假促销，确保比价数据真实可信。</p>
+        <div class="tc-tag">实时价格监控</div>
+      </div>
+      <div class="tech-card">
+        <div class="tc-icon">⚖️</div>
+        <h4>AI + 陪审团仲裁</h4>
+        <p>纠纷先由 AI 预判分责，复杂案件提交随机抽选的平台信用 AAA 用户组成陪审团共同裁决，公平公正。</p>
+        <div class="tc-tag">智能仲裁机制</div>
+      </div>
+      <div class="tech-card">
+        <div class="tc-icon">📊</div>
+        <h4>实时运营数据中台</h4>
+        <p>毫秒级订单处理、实时 GMV 看板、供应商结算自动化、用户行为分析，全平台数据统一治理。</p>
+        <div class="tc-tag">大数据基础设施</div>
+      </div>
+      <div class="tech-card">
+        <div class="tc-icon">🔐</div>
+        <h4>多层安全防护体系</h4>
+        <p>IP 白名单、操作审计日志、连续失败锁定、数据加密传输，平台安全稳定运行，用户数据零泄露。</p>
+        <div class="tc-tag">企业级安全架构</div>
+      </div>
+      <div class="tech-card">
+        <div class="tc-icon">⭐</div>
+        <h4>双向信用评分系统</h4>
+        <p>消费者六维 + 供应商五维信用模型，AI 动态评分，信用体系约束双方行为，维护平台生态健康。</p>
+        <div class="tc-tag">信用生态引擎</div>
+      </div>
     </div>
   </div>
 </section>
